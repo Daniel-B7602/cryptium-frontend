@@ -1,0 +1,525 @@
+/* ================================================================
+   Experiments Page – Constructor Experimental de Cifrados Propios
+   ================================================================ */
+
+.exp-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ---- Hero Section ---- */
+.exp-hero {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.exp-hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.exp-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clr-accent);
+  background: rgba(0, 212, 255, 0.12);
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  padding: 4px 12px;
+  border-radius: 20px;
+  width: fit-content;
+  margin-bottom: 2px;
+}
+
+.exp-hero-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  background: linear-gradient(90deg, #fff 0%, var(--clr-accent) 60%, var(--clr-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.exp-hero-subtitle {
+  font-size: 0.88rem;
+  color: var(--txt-secondary);
+  line-height: 1.55;
+  max-width: 720px;
+}
+
+/* ---- Layout Grid ---- */
+.exp-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+/* ---- Card Headers ---- */
+.exp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.exp-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.exp-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+}
+
+.exp-card-sub {
+  font-size: 0.78rem;
+  color: var(--txt-muted);
+}
+
+/* ---- ZONA 1: CONSTRUCTOR ---- */
+.exp-builder-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.exp-meta-bar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: end;
+  background: var(--clr-surface-2);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border);
+}
+
+.exp-presets-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exp-presets-select {
+  background: var(--clr-surface-3);
+  color: var(--txt-primary);
+  border: 1px solid var(--clr-border);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+/* Palette of available operations */
+.exp-palette-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exp-palette-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--txt-muted);
+}
+
+.exp-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.exp-palette-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.exp-palette-btn:hover {
+  border-color: var(--clr-accent);
+  background: var(--clr-surface-3);
+  transform: translateY(-2px);
+}
+
+.exp-palette-btn-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.exp-palette-btn-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+}
+
+.exp-palette-btn-desc {
+  font-size: 0.74rem;
+  color: var(--txt-muted);
+  line-height: 1.4;
+}
+
+/* Active Pipeline List */
+.exp-pipeline-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exp-pipeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exp-pipe-item {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  transition: border-color 0.2s;
+}
+
+.exp-pipe-item:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.exp-pipe-num {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--clr-accent);
+}
+
+.exp-pipe-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.exp-pipe-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.exp-pipe-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+}
+
+.exp-pipe-desc {
+  font-size: 0.76rem;
+  color: var(--txt-secondary);
+}
+
+.exp-pipe-params {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.exp-param-label {
+  font-size: 0.75rem;
+  color: var(--txt-muted);
+  font-weight: 600;
+}
+
+.exp-param-input {
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  color: var(--txt-primary);
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  width: 140px;
+}
+
+.exp-param-input--number {
+  width: 70px;
+}
+
+.exp-pipe-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.exp-btn-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  color: var(--txt-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exp-btn-icon:hover:not(:disabled) {
+  color: var(--txt-primary);
+  border-color: var(--clr-accent);
+}
+
+.exp-btn-icon:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.exp-btn-icon--del:hover:not(:disabled) {
+  color: #f43f5e;
+  border-color: #f43f5e;
+  background: rgba(244, 63, 94, 0.1);
+}
+
+/* Diagram preview */
+.exp-diagram-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--clr-surface-3);
+  border: 1px dashed var(--clr-border);
+  border-radius: var(--radius-md);
+  margin-top: 6px;
+}
+
+.exp-diag-node {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  color: var(--txt-primary);
+}
+
+.exp-diag-arrow {
+  color: var(--clr-accent);
+  font-size: 0.8rem;
+}
+
+/* ---- ZONA 2: LABORATORIO ---- */
+.exp-lab-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---- ZONA 3: RESULTADOS ---- */
+.exp-results-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Integrity match banner */
+.exp-match-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid;
+}
+
+.exp-match-banner--ok {
+  background: rgba(16, 212, 110, 0.1);
+  border-color: rgba(16, 212, 110, 0.4);
+  color: #10d46e;
+}
+
+.exp-match-banner--bad {
+  background: rgba(244, 63, 94, 0.1);
+  border-color: rgba(244, 63, 94, 0.4);
+  color: #f43f5e;
+}
+
+.exp-match-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.exp-match-sub {
+  font-size: 0.78rem;
+  color: var(--txt-secondary);
+}
+
+/* Step-by-step Execution Tables/Cards */
+.exp-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exp-step-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.exp-step-item--inverse {
+  border-left: 3px solid var(--clr-purple);
+}
+
+.exp-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.exp-step-title {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+}
+
+.exp-step-hex {
+  font-size: 0.8rem;
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: var(--clr-accent);
+  word-break: break-all;
+  user-select: all;
+}
+
+.exp-step-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  color: var(--txt-muted);
+}
+
+/* Outputs & Final Cipher */
+.exp-final-outputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.exp-output-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.exp-output-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--txt-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.exp-output-val {
+  font-size: 0.82rem;
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: var(--txt-primary);
+  word-break: break-all;
+  margin: 0;
+}
+
+/* Educational Notice */
+.exp-edu-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  font-size: 0.84rem;
+  color: var(--txt-secondary);
+  line-height: 1.55;
+}
+
+.exp-edu-notice svg {
+  flex-shrink: 0;
+  color: var(--clr-warning);
+  margin-top: 2px;
+}
+
+.exp-edu-notice strong {
+  color: #fff;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .exp-meta-bar {
+    grid-template-columns: 1fr;
+  }
+  .exp-final-outputs {
+    grid-template-columns: 1fr;
+  }
+  .exp-pipe-item {
+    grid-template-columns: 1fr;
+  }
+}

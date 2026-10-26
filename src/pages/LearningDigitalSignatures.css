@@ -1,0 +1,335 @@
+/* ================================================================
+   LearningDigitalSignatures.css — Módulo 5: Firmas Digitales
+   ================================================================ */
+
+/* Barra de navegación rápida */
+.lds-nav-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+}
+
+.lds-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  color: var(--txt-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.lds-nav-btn:hover {
+  color: var(--txt-primary);
+  border-color: var(--clr-border-light);
+  background: var(--clr-surface-3);
+}
+
+.lds-nav-btn.active {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(16, 212, 110, 0.2));
+  border-color: #10d46e;
+  color: #10d46e;
+  box-shadow: 0 0 10px rgba(16, 212, 110, 0.2);
+}
+
+/* Flujo visual de firma y verificación */
+.lds-flow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.lds-flow-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.lds-actor-box {
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lds-actor-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.lds-actor-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--txt-primary);
+}
+
+.lds-actor-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lds-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--txt-secondary);
+  line-height: 1.45;
+}
+
+.lds-step-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--clr-surface-3);
+  color: var(--clr-accent);
+  flex-shrink: 0;
+}
+
+.lds-flow-channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(13, 20, 33, 0.7);
+  border: 1px dashed var(--clr-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+  min-width: 140px;
+}
+
+.lds-channel-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--clr-surface-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Laboratorio de Firma */
+.lds-lab-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lds-keys-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+}
+
+.lds-key-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lds-key-thumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--clr-accent);
+}
+
+.lds-workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.lds-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+}
+
+.lds-pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.lds-pane-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+}
+
+.lds-textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  padding: 10px 12px;
+  background: var(--clr-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  color: var(--txt-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.lds-textarea:focus {
+  outline: none;
+  border-color: var(--clr-accent);
+}
+
+.lds-sig-box {
+  background: var(--clr-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: #10d46e;
+  word-break: break-all;
+  line-height: 1.5;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.lds-sig-box.tampered {
+  color: #f43f5e;
+  border-color: rgba(244, 63, 94, 0.4);
+}
+
+/* Banner de Resultado de Verificación */
+.lds-verify-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 18px 24px;
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  transition: all var(--t-fast);
+}
+
+.lds-verify-banner.valid {
+  background: linear-gradient(135deg, rgba(16, 212, 110, 0.12) 0%, rgba(13, 20, 33, 0.95) 100%);
+  border-color: rgba(16, 212, 110, 0.4);
+  box-shadow: 0 0 16px rgba(16, 212, 110, 0.1);
+}
+
+.lds-verify-banner.invalid {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.12) 0%, rgba(13, 20, 33, 0.95) 100%);
+  border-color: rgba(244, 63, 94, 0.4);
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.1);
+}
+
+.lds-verify-status-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lds-verify-text h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.lds-verify-text p {
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: var(--txt-secondary);
+}
+
+/* Barra de manipulación intencional */
+.lds-tamper-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+}
+
+/* PEM Accordion */
+.lds-pem-view {
+  background: #090d16;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--clr-accent);
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-x: auto;
+}
+
+/* Desafío */
+.lds-challenge-card {
+  padding: 22px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.06) 0%, rgba(16, 212, 110, 0.08) 100%);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .lds-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+  .lds-flow-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,240 @@
+/* ================================================================
+   LearningCryptanalysis.css — Módulo 6: Criptoanálisis
+   ================================================================ */
+
+/* Barra de navegación rápida */
+.lca-nav-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+}
+
+.lca-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  color: var(--txt-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.lca-nav-btn:hover {
+  color: var(--txt-primary);
+  border-color: var(--clr-border-light);
+  background: var(--clr-surface-3);
+}
+
+.lca-nav-btn.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(0, 212, 255, 0.15));
+  border-color: #a855f7;
+  color: #c084fc;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.25);
+}
+
+/* Grilla de Modelos de Ataque */
+.lca-models-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.lca-model-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform var(--t-fast), border-color var(--t-fast);
+}
+
+.lca-model-card:hover {
+  border-color: rgba(168, 85, 247, 0.4);
+  transform: translateY(-2px);
+}
+
+.lca-model-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lca-model-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+}
+
+.lca-model-field {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--txt-secondary);
+}
+
+.lca-model-field strong {
+  color: var(--txt-primary);
+}
+
+/* Fuerza Bruta César */
+.lca-bf-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lca-table-scroll {
+  max-height: 380px;
+  overflow-y: auto;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  background: var(--clr-bg);
+}
+
+.lca-bf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.lca-bf-table th {
+  position: sticky;
+  top: 0;
+  background: var(--clr-surface-3);
+  padding: 10px 14px;
+  text-align: left;
+  color: var(--txt-primary);
+  font-weight: 700;
+  border-bottom: 1px solid var(--clr-border);
+  z-index: 2;
+}
+
+.lca-bf-table td {
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--txt-secondary);
+}
+
+.lca-bf-table tr.clickable {
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+
+.lca-bf-table tr.clickable:hover {
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.lca-bf-table tr.best-match {
+  background: rgba(16, 212, 110, 0.1);
+}
+
+.lca-bf-table tr.best-match td {
+  color: #10d46e;
+  font-weight: 600;
+}
+
+.lca-bf-table tr.selected {
+  outline: 1px solid var(--clr-accent);
+  background: rgba(0, 212, 255, 0.12);
+}
+
+/* Frecuencias */
+.lca-freq-top-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.lca-freq-chip {
+  padding: 4px 10px;
+  border-radius: 16px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--clr-accent);
+}
+
+/* Sensibilidad y Difusión */
+.lca-diff-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.lca-diff-pane {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lca-diff-meter {
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lca-diff-meter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.lca-diff-track {
+  width: 100%;
+  height: 10px;
+  background: var(--clr-surface-3);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.lca-diff-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+/* Desafío Final */
+.lca-challenge-box {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(13, 20, 33, 0.95) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .lca-diff-dual-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,136 @@
+/* ================================================================
+   Coming Soon / Preparatory Pages Shared Styles
+   ================================================================ */
+
+.coming-soon {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 800px;
+}
+
+/* ---- Hero ---- */
+.cs-hero {
+  text-align: center;
+  padding: 56px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.cs-badge {
+  align-self: center;
+}
+
+.cs-icon-large {
+  font-size: 3.5rem;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.cs-title {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--txt-primary) 0%, var(--clr-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cs-desc {
+  font-size: 1rem;
+  color: var(--txt-secondary);
+  line-height: 1.7;
+  max-width: 520px;
+}
+
+/* ---- Features Grid ---- */
+.cs-features-grid {
+  margin: 0;
+}
+
+.cs-feature-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+.cs-feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--clr-accent-glow);
+  color: var(--clr-accent);
+  border: 1px solid rgba(0,212,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cs-feature-icon--purple {
+  background: var(--clr-accent-2-glow);
+  color: #a78bfa;
+  border-color: rgba(124,58,237,0.2);
+}
+
+.cs-feature-label {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--txt-secondary);
+}
+
+.cs-feature-badge {
+  flex-shrink: 0;
+}
+
+/* ---- Info Card ---- */
+.cs-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  border-color: var(--clr-accent-dim);
+  background: linear-gradient(135deg, rgba(0,212,255,0.04), var(--clr-surface));
+}
+
+.cs-info-icon {
+  color: var(--clr-accent);
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  margin-top: 2px;
+}
+
+.cs-info-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+  margin-bottom: 4px;
+}
+
+.cs-info-desc {
+  font-size: 0.85rem;
+  color: var(--txt-secondary);
+  line-height: 1.6;
+}
+
+/* ---- Warning Card ---- */
+.cs-warning-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-color: var(--clr-warning);
+  background: var(--clr-warning-bg);
+  font-size: 0.85rem;
+}
+
+.cs-warning-text {
+  color: var(--txt-secondary);
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .cs-hero { padding: 32px 20px; }
+  .cs-title { font-size: 1.5rem; }
+}

@@ -1,0 +1,286 @@
+/* ================================================================
+   FileCrypto Page Styles
+   ================================================================ */
+
+.filecrypto {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.fc-top-bar {
+  display: flex;
+  align-items: center;
+}
+
+.fc-segmented {
+  align-self: flex-start;
+}
+
+/* ---- Algorithm Selector Card ---- */
+.fc-algo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+}
+
+.fc-algo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fc-algo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.fc-algo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--clr-bg);
+  border: 1px solid var(--clr-border);
+  color: var(--txt-primary);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.fc-algo-btn:hover {
+  border-color: var(--clr-border-hover);
+  background: var(--clr-surface-3);
+}
+
+.fc-algo-btn--active {
+  border-color: var(--clr-accent);
+  background: var(--clr-accent-glow);
+  box-shadow: var(--glow-accent-sm);
+}
+
+.fc-algo-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--txt-primary);
+}
+
+.fc-algo-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  font-size: 0.8rem;
+}
+
+/* ---- Layout ---- */
+.fc-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ---- Upload Card ---- */
+.fc-upload-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---- Dropzone ---- */
+.fc-dropzone {
+  border: 2px dashed var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all var(--t-base);
+  text-align: center;
+}
+
+.fc-dropzone:hover,
+.fc-drop--over {
+  border-color: var(--clr-accent);
+  background: var(--clr-accent-glow);
+}
+
+.fc-drop-icon {
+  color: var(--txt-muted);
+  margin-bottom: 8px;
+}
+
+.fc-drop-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--txt-primary);
+}
+
+.fc-drop-sub {
+  font-size: 0.82rem;
+  color: var(--txt-muted);
+  margin-bottom: 12px;
+}
+
+.fc-browse-btn {
+  pointer-events: none;
+}
+
+.fc-file-input-hidden {
+  display: none;
+}
+
+/* ---- File Info ---- */
+.fc-file-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+}
+
+.fc-file-icon {
+  color: var(--clr-accent);
+  flex-shrink: 0;
+}
+
+.fc-file-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fc-file-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--txt-primary);
+  font-family: 'JetBrains Mono', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-file-size,
+.fc-file-type {
+  font-size: 0.75rem;
+  color: var(--txt-muted);
+}
+
+.fc-remove-btn {
+  flex-shrink: 0;
+  color: var(--clr-error);
+}
+
+.fc-key-group {
+  flex-shrink: 0;
+}
+
+/* ---- Right Column ---- */
+.fc-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---- Action Card ---- */
+.fc-action-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fc-exec-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.fc-output-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--clr-bg);
+  border: 1px solid var(--clr-border);
+}
+
+.fc-op-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--txt-muted);
+}
+
+.fc-op-name {
+  font-size: 0.8rem;
+  color: var(--clr-accent);
+  word-break: break-all;
+}
+
+/* ---- Download Card ---- */
+.fc-download-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-color: var(--clr-success);
+  background: linear-gradient(135deg, var(--clr-success-bg), var(--clr-surface));
+}
+
+.fc-download-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fc-download-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.fc-download-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fc-dl-filename {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clr-success);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.fc-dl-sub {
+  font-size: 0.75rem;
+  color: var(--txt-secondary);
+}
+
+.fc-dl-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .fc-layout {
+    grid-template-columns: 1fr;
+  }
+}
