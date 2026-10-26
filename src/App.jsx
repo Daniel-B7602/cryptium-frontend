@@ -7,6 +7,7 @@ import FileCrypto from './pages/FileCrypto';
 import Analysis from './pages/Analysis';
 import Cryptanalysis from './pages/Cryptanalysis';
 import Experiments from './pages/Experiments';
+import AudioSteganography from './pages/AudioSteganography';
 import Learning from './pages/Learning';
 import LearningFundamentos from './pages/LearningFundamentos';
 import LearningSymmetric from './pages/LearningSymmetric';
@@ -27,6 +28,7 @@ export default function App() {
               <Route path="/"                      element={<Dashboard />} />
               <Route path="/cifrado"               element={<TextCrypto />} />
               <Route path="/archivos"              element={<FileCrypto />} />
+              <Route path="/esteganografia-audio"  element={<AudioSteganography />} />
               <Route path="/analisis"              element={<Analysis />} />
               <Route path="/criptoanalis"          element={<Cryptanalysis />} />
               <Route path="/experimentos"          element={<Experiments />} />

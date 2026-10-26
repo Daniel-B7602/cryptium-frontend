@@ -3181,6 +3181,8 @@
     width: 100%;
     justify-content: center;
   }
+}
+
 /* ---------- Dual Experience: APRENDER vs PRACTICAR ---------- */
 .lesson-nav-stepper {
   display: flex;
@@ -3574,6 +3576,429 @@
   .action-trigger-row {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+/* ---------- Crypto Serpentine Learning Path (Duolingo Style) ---------- */
+.crypto-route-hero {
+  background: linear-gradient(135deg, rgba(13, 20, 33, 0.95) 0%, rgba(17, 24, 39, 0.98) 100%);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.crypto-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--clr-accent-glow);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--clr-accent);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.crypto-hero-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--txt-primary);
+  margin-bottom: 8px;
+}
+
+.crypto-hero-subtitle {
+  font-size: 1rem;
+  color: var(--txt-secondary);
+  max-width: 760px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.crypto-hud-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.crypto-hud-card {
+  background: rgba(8, 12, 20, 0.6);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all var(--t-fast);
+}
+
+.crypto-hud-card:hover {
+  border-color: var(--clr-border-hover);
+  transform: translateY(-2px);
+}
+
+.crypto-hud-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.crypto-hud-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--txt-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.crypto-hud-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--txt-primary);
+}
+
+.crypto-hud-track {
+  height: 6px;
+  background: var(--clr-surface-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.crypto-hud-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10d46e, #00d4ff);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.crypto-hud-sub {
+  font-size: 0.75rem;
+  color: var(--txt-muted);
+}
+
+.crypto-hud-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid var(--clr-border);
+  font-size: 0.8rem;
+  color: var(--txt-secondary);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.crypto-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  color: var(--txt-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.crypto-reset-btn:hover {
+  background: rgba(244, 63, 94, 0.1);
+  border-color: rgba(244, 63, 94, 0.4);
+  color: var(--clr-error);
+}
+
+/* View Switcher */
+.crypto-view-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 12px 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.crypto-view-label {
+  font-size: 0.88rem;
+  color: var(--txt-secondary);
+}
+
+.crypto-switch-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.crypto-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface-2);
+  color: var(--txt-secondary);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.crypto-switch-btn.active {
+  background: var(--clr-accent-glow);
+  border-color: var(--clr-accent);
+  color: var(--clr-accent);
+}
+
+/* ---------- Path Serpentine Container ---------- */
+.crypto-path-container {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.crypto-path-track {
+  position: absolute;
+  top: 40px;
+  bottom: 40px;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(0, 212, 255, 0.6) 0%, rgba(124, 58, 237, 0.6) 50%, rgba(16, 212, 110, 0.6) 100%);
+  border-radius: 999px;
+  z-index: 1;
+}
+
+.crypto-path-node-wrapper {
+  position: relative;
+  margin-bottom: 48px;
+}
+
+.crypto-path-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.crypto-path-row--left .crypto-path-card-slot {
+  grid-column: 1;
+}
+.crypto-path-row--left .crypto-path-node-slot {
+  grid-column: 2;
+}
+.crypto-path-row--left .crypto-path-empty-slot {
+  grid-column: 3;
+}
+
+.crypto-path-row--right .crypto-path-empty-slot {
+  grid-column: 1;
+}
+.crypto-path-row--right .crypto-path-node-slot {
+  grid-column: 2;
+}
+.crypto-path-row--right .crypto-path-card-slot {
+  grid-column: 3;
+}
+
+/* Node Button */
+.crypto-path-node-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.crypto-node-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--clr-border);
+  background: var(--clr-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  transition: all var(--t-fast);
+}
+
+.crypto-node-btn:hover {
+  transform: scale(1.12);
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 20px var(--clr-accent-glow);
+}
+
+.crypto-node-btn.explored {
+  border-color: var(--clr-accent);
+  background: var(--clr-surface-3);
+  box-shadow: 0 0 16px var(--clr-accent-glow);
+}
+
+.crypto-node-btn.completed {
+  border-color: var(--clr-success);
+  background: linear-gradient(135deg, rgba(16, 212, 110, 0.2), rgba(0, 212, 255, 0.2));
+  box-shadow: 0 0 20px rgba(16, 212, 110, 0.35);
+}
+
+.crypto-node-btn.active-pulse {
+  animation: duoPulseNode 1.8s infinite ease-in-out;
+}
+
+@keyframes duoPulseNode {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(0, 212, 255, 0); }
+}
+
+.crypto-node-num-tag {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  color: var(--txt-secondary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+.crypto-node-completed-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--clr-success);
+  color: #042514;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--clr-bg);
+}
+
+/* Stage Card */
+.crypto-stage-card {
+  background: linear-gradient(145deg, rgba(13, 20, 33, 0.9) 0%, rgba(17, 24, 39, 0.95) 100%);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--t-fast);
+  position: relative;
+}
+
+.crypto-stage-card:hover {
+  border-color: var(--clr-border-hover);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.crypto-stage-card.recommended {
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 24px rgba(0, 212, 255, 0.15);
+}
+
+.crypto-stage-card.completed {
+  border-color: rgba(16, 212, 110, 0.35);
+}
+
+.crypto-stage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.crypto-stage-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--txt-secondary);
+}
+
+.crypto-stage-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.crypto-stage-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--txt-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.crypto-stage-sub {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.crypto-stage-desc {
+  font-size: 0.88rem;
+  color: var(--txt-secondary);
+  line-height: 1.5;
+}
+
+.crypto-stage-concepts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.crypto-concept-pill {
+  font-size: 0.72rem;
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  color: var(--txt-secondary);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.crypto-stage-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .crypto-path-track {
+    display: none;
+  }
+  .crypto-path-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .crypto-path-empty-slot {
+    display: none;
+  }
+  .crypto-path-card-slot {
+    width: 100%;
   }
 }
 

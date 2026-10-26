@@ -8,16 +8,18 @@ import {
   ShieldCheck,
   ChevronRight,
   Sliders,
+  AudioWaveform,
 } from 'lucide-react';
 import './Sidebar.css';
 
 const navItems = [
-  { to: '/',              label: 'Inicio',                    icon: LayoutDashboard, exact: true },
-  { to: '/cifrado',       label: 'Cifrado',                    icon: Lock },
-  { to: '/archivos',      label: 'Archivos',                   icon: FileKey },
-  { to: '/analisis',      label: 'Criptoanálisis',             icon: FlaskConical,    badge: 'Lab' },
-  { to: '/experimentos',  label: 'Experimentos',               icon: Sliders,        badge: 'Beta' },
-  { to: '/aprendizaje',   label: 'Aprendizaje',                icon: BookOpen,        badge: 'Nuevo' },
+  { to: '/',                    label: 'Inicio',                  icon: LayoutDashboard, exact: true },
+  { to: '/cifrado',             label: 'Cifrado',                 icon: Lock },
+  { to: '/archivos',            label: 'Archivos',                icon: FileKey },
+  { to: '/esteganografia-audio', label: 'Esteganografía de audio', icon: AudioWaveform },
+  { to: '/analisis',            label: 'Criptoanálisis',           icon: FlaskConical,    badge: 'Lab' },
+  { to: '/experimentos',        label: 'Experimentos',             icon: Sliders,        badge: 'Beta' },
+  { to: '/aprendizaje',         label: 'Aprendizaje',              icon: BookOpen,        badge: 'Nuevo' },
 ];
 
 export default function Sidebar() {

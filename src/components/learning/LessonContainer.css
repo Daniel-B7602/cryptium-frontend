@@ -1,0 +1,390 @@
+/* ================================================================
+   Cryptium - Duolingo-inspired Lesson Experience Styles
+   Cybersecurity & Cryptography Visual Identity
+   ================================================================ */
+
+.duo-lesson-shell {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 20px 100px 20px;
+  position: relative;
+  animation: duoFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes duoFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Top Bar ---------- */
+.duo-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 8px 0;
+}
+
+.duo-exit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface);
+  color: var(--txt-secondary);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  flex-shrink: 0;
+}
+
+.duo-exit-btn:hover {
+  background: var(--clr-surface-3);
+  color: var(--txt-primary);
+  border-color: var(--clr-border-hover);
+  transform: scale(1.04);
+}
+
+/* Stepper Segments */
+.duo-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 480px;
+}
+
+.duo-step-segment {
+  height: 10px;
+  flex: 1;
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.duo-step-segment.completed {
+  background: linear-gradient(90deg, #10d46e, #00d4ff);
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.25);
+}
+
+.duo-step-segment.active {
+  background: var(--clr-surface-3);
+  border-color: var(--clr-accent);
+}
+
+.duo-step-segment.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  background: var(--clr-accent);
+  border-radius: 999px;
+  animation: duoPulseSegment 1.5s infinite alternate;
+}
+
+@keyframes duoPulseSegment {
+  from { opacity: 0.6; }
+  to { opacity: 1; box-shadow: 0 0 8px var(--clr-accent); }
+}
+
+.duo-xp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+/* ---------- Main Exercise Container ---------- */
+.duo-main-card {
+  background: linear-gradient(145deg, rgba(13, 20, 33, 0.85) 0%, rgba(17, 24, 39, 0.95) 100%);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.4);
+  padding: 32px;
+  margin-bottom: 24px;
+  position: relative;
+  backdrop-filter: blur(12px);
+}
+
+.duo-exercise-header {
+  margin-bottom: 28px;
+}
+
+.duo-exercise-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.duo-module-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--clr-accent);
+  background: var(--clr-accent-glow);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.duo-step-counter {
+  font-size: 0.85rem;
+  color: var(--txt-secondary);
+  font-weight: 600;
+}
+
+.duo-instruction-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--txt-primary);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.duo-instruction-desc {
+  font-size: 0.95rem;
+  color: var(--txt-secondary);
+  line-height: 1.5;
+}
+
+/* Protagonist Content Area */
+.duo-content-area {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ---------- Bottom Action Bar / Feedback Drawer ---------- */
+.duo-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(13, 20, 33, 0.96);
+  border-top: 1px solid var(--clr-border);
+  backdrop-filter: blur(16px);
+  padding: 16px 24px;
+  z-index: 100;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.duo-action-bar.status-success {
+  background: linear-gradient(90deg, rgba(16, 212, 110, 0.14) 0%, rgba(13, 20, 33, 0.98) 40%);
+  border-top: 1px solid rgba(16, 212, 110, 0.4);
+}
+
+.duo-action-bar.status-error {
+  background: linear-gradient(90deg, rgba(244, 63, 94, 0.15) 0%, rgba(13, 20, 33, 0.98) 40%);
+  border-top: 1px solid rgba(244, 63, 94, 0.4);
+}
+
+.duo-action-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.duo-feedback-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1;
+  min-width: 260px;
+}
+
+.duo-feedback-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.duo-action-bar.status-success .duo-feedback-icon {
+  background: var(--clr-success);
+  color: #042514;
+  box-shadow: 0 0 16px rgba(16, 212, 110, 0.4);
+}
+
+.duo-action-bar.status-error .duo-feedback-icon {
+  background: var(--clr-error);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);
+}
+
+.duo-feedback-text h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.duo-action-bar.status-success .duo-feedback-text h4 {
+  color: var(--clr-success);
+}
+
+.duo-action-bar.status-error .duo-feedback-text h4 {
+  color: var(--clr-error);
+}
+
+.duo-feedback-text p {
+  font-size: 0.9rem;
+  color: var(--txt-primary);
+  line-height: 1.4;
+}
+
+.duo-feedback-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--txt-secondary);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.duo-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.duo-btn-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #00d4ff 0%, #0098bb 100%);
+  color: #080c14;
+  box-shadow: var(--glow-accent);
+  transition: all var(--t-fast);
+}
+
+.duo-btn-check:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 24px rgba(0, 212, 255, 0.45);
+}
+
+.duo-btn-check:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: var(--clr-surface-3);
+  color: var(--txt-muted);
+}
+
+.duo-btn-continue {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #10d46e 0%, #059669 100%);
+  color: #042514;
+  box-shadow: 0 0 20px rgba(16, 212, 110, 0.35);
+  transition: all var(--t-fast);
+  animation: duoBounce 0.4s ease;
+}
+
+.duo-btn-continue:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 28px rgba(16, 212, 110, 0.5);
+}
+
+.duo-btn-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  background: rgba(244, 63, 94, 0.12);
+  color: #fca5a5;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.duo-btn-retry:hover {
+  background: rgba(244, 63, 94, 0.22);
+  color: #ffffff;
+}
+
+@keyframes duoBounce {
+  0% { transform: scale(0.95); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .duo-lesson-shell {
+    padding: 12px 14px 110px 14px;
+  }
+  .duo-main-card {
+    padding: 20px 16px;
+  }
+  .duo-instruction-title {
+    font-size: 1.25rem;
+  }
+  .duo-action-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .duo-action-buttons {
+    justify-content: stretch;
+  }
+  .duo-btn-check, .duo-btn-continue, .duo-btn-retry {
+    width: 100%;
+    justify-content: center;
+  }
+}

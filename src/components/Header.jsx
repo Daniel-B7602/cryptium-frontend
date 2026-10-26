@@ -6,6 +6,7 @@ const routeTitles = {
   '/':             { title: 'Dashboard',       sub: 'Vista general del sistema' },
   '/cifrado':      { title: 'Cifrado de Texto', sub: 'Cifrar y descifrar mensajes' },
   '/archivos':     { title: 'Cifrado de Archivos', sub: 'Proteger archivos con criptografía' },
+  '/esteganografia-audio': { title: 'Esteganografía de audio', sub: 'Ocultación de mensajes en señales de audio' },
   '/analisis':     { title: 'Criptoanálisis', sub: 'Explora patrones, mide propiedades y analiza la seguridad de los cifrados' },
   '/criptoanalis': { title: 'Criptoanálisis', sub: 'Explora patrones, mide propiedades y analiza la seguridad de los cifrados' },
   '/experimentos': { title: 'Experimentos',    sub: 'Constructor de cifrados propios' },
