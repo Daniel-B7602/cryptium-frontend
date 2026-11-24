@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -8,12 +9,14 @@ import {
   ArrowRight,
   RotateCcw,
   Loader2,
+  HelpCircle,
+  Lightbulb,
 } from 'lucide-react';
 import './LessonContainer.css';
 
 /**
  * Reusable Duolingo-inspired lesson container shell.
- * Standardizes progress stepper, prompt header, and bottom feedback drawer.
+ * Standardizes progress stepper, prompt header, hint toggle, and bottom feedback drawer.
  */
 export default function LessonContainer({
   moduleId,
@@ -22,9 +25,10 @@ export default function LessonContainer({
   totalSteps = 4,
   instruction,
   description,
+  hint = null,
   userXp = 0,
   canCheck = false,
-  feedback = null, // null | { status: 'success' | 'error', title: string, message: string, hint?: string }
+  feedback = null, // null | { status: 'success' | 'error', title: string, message: string, hint?: string, explanation?: string }
   onCheck,
   onContinue,
   onRetry,
@@ -34,6 +38,12 @@ export default function LessonContainer({
   children,
 }) {
   const navigate = useNavigate();
+  const [showHint, setShowHint] = useState(false);
+
+  // Auto-hide hint when changing steps
+  useEffect(() => {
+    setShowHint(false);
+  }, [currentStep]);
 
   const handleExit = () => {
     if (onExit) onExit();
@@ -83,10 +93,37 @@ export default function LessonContainer({
             <span className="duo-step-counter">
               Reto {currentStep} de {totalSteps}
             </span>
+
+            {/* Dedicated Pedagogical Hint Button */}
+            {hint && (
+              <button
+                type="button"
+                className={`duo-hint-btn ${showHint ? 'active' : ''}`}
+                onClick={() => setShowHint((prev) => !prev)}
+                title={showHint ? 'Ocultar pista' : 'Ver pista pedagógica'}
+              >
+                <Lightbulb size={15} />
+                <span>{showHint ? 'Ocultar Pista' : '💡 Pista'}</span>
+              </button>
+            )}
           </div>
 
           <h1 className="duo-instruction-title">{instruction}</h1>
           {description && <p className="duo-instruction-desc">{description}</p>}
+
+          {/* Collapsible Pedagogical Hint Drawer (Never reveals the direct answer) */}
+          {showHint && hint && (
+            <div className="duo-hint-drawer animate-fade-in">
+              <div className="duo-hint-drawer-header">
+                <Lightbulb size={18} className="duo-hint-icon" />
+                <span className="duo-hint-label">Pista orientativa</span>
+              </div>
+              <p className="duo-hint-body">{hint}</p>
+              <div className="duo-hint-footer">
+                💡 Esta pista te ayuda a razonar el método sin revelar directamente la respuesta.
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Protagonist Interactive Exercise Content */}
@@ -119,14 +156,28 @@ export default function LessonContainer({
               <div className="duo-feedback-text">
                 <h4>{feedback.title}</h4>
                 <p>{feedback.message}</p>
-                {feedback.hint && (
+                {feedback.explanation && (
+                  <p className="duo-feedback-explanation">
+                    <strong>¿Por qué?</strong> {feedback.explanation}
+                  </p>
+                )}
+                {feedback.hint && !feedback.explanation && (
                   <span className="duo-feedback-hint">Pista: {feedback.hint}</span>
                 )}
               </div>
             </div>
           ) : (
             <div className="duo-feedback-placeholder">
-              {/* Optional contextual hint can go here */}
+              {hint && !showHint && (
+                <button
+                  type="button"
+                  className="duo-feedback-hint-trigger"
+                  onClick={() => setShowHint(true)}
+                >
+                  <Lightbulb size={14} />
+                  <span>¿Necesitas una pista para resolver este reto?</span>
+                </button>
+              )}
             </div>
           )}
 

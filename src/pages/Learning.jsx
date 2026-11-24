@@ -203,18 +203,18 @@ export default function Learning() {
           </div>
           <h1 className="crypto-hero-title">RUTA DE APRENDIZAJE CRIPTOGRÁFICO</h1>
           <p className="crypto-hero-subtitle">
-            Aprende resolviendo retos cortos e interactivos inspirados en la metodología Duolingo.
-            Cifra mensajes reales, analiza colisiones hash, firma digitalmente con RSA y ejecuta criptoanálisis
-            con retroalimentación inmediata en cada reto.
+            Aprende resolviendo 24 ejercicios progresivos y 96 retos prácticos interactivos inspirados en la metodología Duolingo.
+            Cifra mensajes reales, analiza la avalancha bit a bit, experimenta la firma digital y ejecuta criptoanálisis
+            con retroalimentación inmediata, pistas orientativas y explicaciones pedagógicas.
           </p>
         </div>
 
         {/* Panel HUD de Progreso Real */}
         <div className="crypto-hud-grid">
-          {/* Tarjeta 1: Retos Superados */}
+          {/* Tarjeta 1: Ejercicios Superados */}
           <div className="crypto-hud-card">
             <div className="crypto-hud-head">
-              <span className="crypto-hud-label">Retos Completados</span>
+              <span className="crypto-hud-label">Ejercicios Completados</span>
               <div className="crypto-hud-icon"><Trophy size={16} /></div>
             </div>
             <div className="crypto-hud-val mono">{totalExercisesCompleted} / {totalExercisesPossible}</div>
@@ -224,7 +224,7 @@ export default function Learning() {
                 style={{ width: `${Math.max(4, globalCompletionRate)}%` }}
               />
             </div>
-            <span className="crypto-hud-sub">{globalCompletionRate}% del plan dominado</span>
+            <span className="crypto-hud-sub">{totalExercisesCompleted * 4} / 96 retos prácticos dominados</span>
           </div>
 
           {/* Tarjeta 2: Módulos Completados */}
@@ -236,7 +236,7 @@ export default function Learning() {
             <div className="crypto-hud-val mono" style={{ color: '#10d46e' }}>
               {completedModulesCount} / {totalModules}
             </div>
-            <span className="crypto-hud-sub">4 retos esenciales por módulo</span>
+            <span className="crypto-hud-sub">4 ejercicios por módulo (16 retos c/u)</span>
           </div>
 
           {/* Tarjeta 3: Puntos de Experiencia */}
@@ -248,7 +248,7 @@ export default function Learning() {
             <div className="crypto-hud-val mono" style={{ color: '#fbbf24' }}>
               {progress.xp || 0} XP
             </div>
-            <span className="crypto-hud-sub">+25 XP por reto verificado</span>
+            <span className="crypto-hud-sub">+25 XP por ejercicio completado</span>
           </div>
 
           {/* Tarjeta 4: Rango */}
@@ -343,7 +343,7 @@ export default function Learning() {
                               : 'badge-purple'
                           }`}
                         >
-                          {isDone ? '✓ 4/4 Retos Superados' : exerciseCount > 0 ? `${exerciseCount}/4 En progreso` : '0/4 Disponible'}
+                          {isDone ? '✓ 4/4 Ejercicios (16 Retos)' : exerciseCount > 0 ? `${exerciseCount}/4 Ejercicios (${exerciseCount * 4}/16 Retos)` : '0/4 Ejercicios (16 Retos)'}
                         </span>
                       </div>
 
@@ -359,12 +359,12 @@ export default function Learning() {
 
                       <p className="crypto-stage-desc">{m.description}</p>
 
-                      {/* Mini barra de progreso de los 4 retos */}
+                      {/* Mini barra de progreso de los 4 ejercicios */}
                       <div style={{ margin: '12px 0 16px 0' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--txt-secondary)', marginBottom: '4px' }}>
-                          <span>Progreso del módulo:</span>
+                          <span>Progreso del tema:</span>
                           <strong style={{ color: isDone ? 'var(--clr-success)' : 'var(--clr-accent)' }}>
-                            {exerciseCount} de 4 retos
+                            {exerciseCount} de 4 ejercicios
                           </strong>
                         </div>
                         <div style={{ display: 'flex', gap: '4px', height: '6px' }}>
@@ -461,7 +461,7 @@ export default function Learning() {
                 <div className="crypto-stage-header">
                   <span className="crypto-stage-tag">{m.tag}</span>
                   <span className={`badge ${isDone ? 'badge-green' : exerciseCount > 0 ? 'badge-accent' : 'badge-purple'}`}>
-                    {isDone ? '✓ 4/4 Retos' : `${exerciseCount}/4 Retos`}
+                    {isDone ? '✓ 4/4 Ejercicios' : `${exerciseCount}/4 Ejercicios`}
                   </span>
                 </div>
 

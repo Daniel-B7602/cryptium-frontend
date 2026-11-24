@@ -253,6 +253,107 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
+.tc-key-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.tc-key-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tc-btn-load-key {
+  font-size: 0.75rem;
+  color: var(--txt-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+}
+
+.tc-btn-load-key:hover {
+  color: var(--txt-primary);
+  background: var(--clr-surface-3);
+}
+
+.tc-btn-gen-rsa {
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
+}
+
+.tc-btn-gen-key {
+  font-size: 0.75rem;
+  color: var(--clr-accent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tc-pem-textarea {
+  min-height: 110px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.tc-key-help {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--txt-muted);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.tc-output-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tc-nonce-pill {
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--clr-accent);
+}
+
+.tc-details-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--txt-secondary);
+  line-height: 1.4;
+}
+
+.tc-details-icon {
+  color: var(--clr-accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 860px) {
   .tc-layout {

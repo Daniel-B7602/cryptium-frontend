@@ -1,0 +1,751 @@
+/* ================================================================
+   Cryptium - Module Topic Layout Styles
+   Separates Theory (Aprender) and Practice (4 Exercises · 16 Challenges)
+   ================================================================ */
+
+.module-topic-hub {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 16px 20px 80px 20px;
+  animation: topicFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes topicFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Top Navigation ---------- */
+.topic-hub-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.topic-nav-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  color: var(--txt-secondary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.topic-nav-back:hover {
+  background: var(--clr-surface-3);
+  color: var(--txt-primary);
+  border-color: var(--clr-border-hover);
+  transform: translateX(-2px);
+}
+
+.topic-nav-xp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+/* ---------- Header Banner ---------- */
+.topic-header-banner {
+  background: linear-gradient(145deg, rgba(13, 20, 33, 0.9) 0%, rgba(20, 27, 45, 0.95) 100%);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-md), 0 0 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.topic-header-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #00d4ff, #10d46e, #f59e0b);
+}
+
+.topic-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.topic-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 212, 255, 0.12);
+  color: #00d4ff;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.topic-progress-badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--txt-secondary);
+}
+
+.topic-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--txt-primary);
+  line-height: 1.25;
+  margin: 0 0 8px 0;
+}
+
+.topic-tagline {
+  font-size: 1rem;
+  color: var(--txt-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ---------- View Switcher Tabs ---------- */
+.topic-view-tabs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  background: var(--clr-surface);
+  padding: 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--clr-border);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.topic-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--txt-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.topic-tab-btn:hover {
+  color: var(--txt-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.topic-tab-btn.active {
+  background: var(--clr-surface-3);
+  color: var(--txt-primary);
+  border: 1px solid var(--clr-border-hover);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.tab-counter-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: var(--clr-accent-glow);
+  color: var(--clr-accent);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+/* ================================================================
+   APARTADO A: TEORÍA (APRENDER)
+   ================================================================ */
+
+.topic-theory-section {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.theory-block {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.theory-block-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--txt-primary);
+  margin: 0 0 16px 0;
+}
+
+.theory-summary-text {
+  font-size: 1.05rem;
+  color: var(--txt-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Concepts & Analogies Grid */
+.theory-concepts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.concept-card {
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform var(--t-fast), border-color var(--t-fast);
+}
+
+.concept-card:hover {
+  border-color: var(--clr-border-hover);
+  transform: translateY(-2px);
+}
+
+.concept-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.concept-icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 212, 255, 0.08);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.concept-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+  margin: 0;
+}
+
+/* Analogy Box */
+.concept-analogy-box {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.07) 0%, rgba(20, 24, 33, 0.7) 100%);
+  border-left: 3px solid #f59e0b;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.analogy-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fbbf24;
+  margin-bottom: 6px;
+}
+
+.analogy-text {
+  font-size: 0.92rem;
+  color: #f3f4f6;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Technical Explanation Box */
+.concept-explanation-box {
+  background: var(--clr-surface);
+  border-left: 3px solid var(--clr-accent);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.explanation-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--clr-accent);
+  margin-bottom: 6px;
+}
+
+.explanation-text {
+  font-size: 0.92rem;
+  color: var(--txt-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Takeaway Pill */
+.concept-takeaway-pill {
+  background: rgba(16, 212, 110, 0.08);
+  border: 1px solid rgba(16, 212, 110, 0.25);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: #6ee7b7;
+  line-height: 1.45;
+}
+
+/* Protocol Visual Flow Diagram */
+.protocol-diagram-wrapper {
+  margin-top: 16px;
+  overflow-x: auto;
+  padding: 12px 0;
+}
+
+.protocol-steps-flow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 680px;
+}
+
+.protocol-step-card {
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  flex: 1;
+  position: relative;
+}
+
+.protocol-step-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--clr-accent);
+  background: rgba(0, 212, 255, 0.1);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  width: fit-content;
+  margin-bottom: 8px;
+}
+
+.protocol-step-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+  margin: 0 0 6px 0;
+}
+
+.protocol-step-desc {
+  font-size: 0.85rem;
+  color: var(--txt-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.protocol-arrow {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--clr-accent);
+  flex-shrink: 0;
+}
+
+/* Takeaways List */
+.takeaways-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.takeaway-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: var(--txt-secondary);
+  line-height: 1.5;
+}
+
+.takeaway-check {
+  color: var(--clr-success);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* Theory CTA Banner */
+.theory-cta-banner {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.12) 0%, rgba(16, 212, 110, 0.08) 100%);
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: var(--radius-xl);
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.cta-banner-text h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--txt-primary);
+  margin: 0 0 6px 0;
+}
+
+.cta-banner-text p {
+  font-size: 0.92rem;
+  color: var(--txt-secondary);
+  margin: 0;
+}
+
+/* ================================================================
+   APARTADO B: PRÁCTICA (4 EJERCICIOS · 16 RETOS)
+   ================================================================ */
+
+.topic-practice-section {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.practice-header-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: 24px 28px;
+}
+
+.practice-header-text h2 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--txt-primary);
+  margin: 0 0 6px 0;
+}
+
+.practice-header-text p {
+  font-size: 0.92rem;
+  color: var(--txt-secondary);
+  margin: 0;
+}
+
+.practice-header-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.practice-stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+}
+
+.practice-stat-badge.xp {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+}
+
+/* Exercise Cards Grid */
+.exercises-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  gap: 20px;
+}
+
+.exercise-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all var(--t-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.exercise-card.is-completed {
+  border-color: rgba(16, 212, 110, 0.35);
+  background: linear-gradient(145deg, rgba(13, 20, 33, 0.9) 0%, rgba(16, 212, 110, 0.05) 100%);
+}
+
+.exercise-card.is-unlocked:not(.is-completed) {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.exercise-card.is-locked {
+  opacity: 0.65;
+  filter: grayscale(0.4);
+}
+
+.exercise-card:hover.is-unlocked {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md), 0 0 20px rgba(0, 0, 0, 0.3);
+  border-color: var(--clr-border-hover);
+}
+
+.exercise-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.exercise-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exercise-level-pill {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.level-basic {
+  background: rgba(0, 212, 255, 0.12);
+  color: #00d4ff;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.level-applied {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.level-advanced {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.level-integrator {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.exercise-num-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--txt-muted);
+}
+
+.exercise-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.exercise-status-badge.completed {
+  background: rgba(16, 212, 110, 0.12);
+  color: #10d46e;
+  border: 1px solid rgba(16, 212, 110, 0.3);
+}
+
+.exercise-status-badge.available {
+  background: rgba(0, 212, 255, 0.12);
+  color: #00d4ff;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+.exercise-status-badge.locked {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--txt-muted);
+  border: 1px solid var(--clr-border);
+}
+
+.exercise-card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--txt-primary);
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.exercise-card-desc {
+  font-size: 0.9rem;
+  color: var(--txt-secondary);
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+}
+
+.exercise-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--clr-border);
+}
+
+.exercise-challenges-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--txt-secondary);
+}
+
+.exercise-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all var(--t-fast);
+}
+
+.exercise-launch-btn.btn-start {
+  background: var(--clr-accent);
+  color: #04121a;
+  box-shadow: 0 2px 10px rgba(0, 212, 255, 0.3);
+}
+
+.exercise-launch-btn.btn-start:hover {
+  background: #33ddff;
+  transform: translateY(-1px);
+}
+
+.exercise-launch-btn.btn-revisit {
+  background: var(--clr-surface-2);
+  color: var(--txt-primary);
+  border: 1px solid var(--clr-border);
+}
+
+.exercise-launch-btn.btn-revisit:hover {
+  background: var(--clr-surface-3);
+  border-color: var(--clr-border-hover);
+}
+
+.exercise-launch-btn:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--txt-muted);
+  cursor: not-allowed;
+  border: 1px solid var(--clr-border);
+  box-shadow: none;
+}
+
+/* Module Completed Celebration */
+.module-completed-celebration {
+  background: linear-gradient(135deg, rgba(16, 212, 110, 0.12) 0%, rgba(0, 212, 255, 0.08) 100%);
+  border: 1px solid rgba(16, 212, 110, 0.4);
+  border-radius: var(--radius-xl);
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.celebration-icon {
+  font-size: 2.2rem;
+}
+
+.celebration-text {
+  flex: 1;
+  min-width: 260px;
+}
+
+.celebration-text h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #10d46e;
+  margin: 0 0 6px 0;
+}
+
+.celebration-text p {
+  font-size: 0.92rem;
+  color: var(--txt-secondary);
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .theory-concepts-grid,
+  .exercises-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .topic-view-tabs {
+    width: 100%;
+    flex-direction: column;
+  }
+  .topic-tab-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .practice-header-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .theory-cta-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

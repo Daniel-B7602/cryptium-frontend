@@ -1,0 +1,183 @@
+/* ================================================================
+   RsaKeyManager Component Styles
+   ================================================================ */
+
+.rsa-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+}
+
+.rsa-manager-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--clr-border);
+  padding-bottom: 12px;
+}
+
+.rsa-manager-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+}
+
+.rsa-icon-accent {
+  color: var(--clr-accent);
+}
+
+.rsa-manager-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rsa-file-input {
+  display: none;
+}
+
+.rsa-alert-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+}
+
+.rsa-alert-error {
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: #f43f5e;
+}
+
+.rsa-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 24px 20px;
+  background: var(--clr-surface-3);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--clr-border);
+}
+
+.rsa-empty-icon {
+  color: var(--clr-accent);
+  margin-bottom: 2px;
+}
+
+.rsa-empty-state p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--txt-secondary);
+}
+
+.rsa-empty-sub {
+  font-size: 0.78rem;
+  color: var(--txt-muted);
+  max-width: 580px;
+  line-height: 1.4;
+}
+
+.rsa-btn-empty-generate {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  padding: 8px 18px;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.2);
+}
+
+.rsa-keys-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .rsa-keys-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rsa-key-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--clr-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  transition: all var(--t-fast);
+}
+
+.rsa-key-box--highlight {
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.12);
+}
+
+.rsa-key-box-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rsa-key-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rsa-key-preview {
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--clr-surface-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--txt-muted);
+  word-break: break-all;
+  white-space: pre-wrap;
+  max-height: 70px;
+  overflow-y: auto;
+}
+
+.rsa-key-preview--private {
+  color: var(--txt-secondary);
+}
+
+.rsa-key-box-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.rsa-key-desc {
+  font-size: 0.72rem;
+  color: var(--txt-muted);
+  line-height: 1.3;
+}
+
+.rsa-key-desc--warn {
+  color: #f59e0b;
+}
+
+.rsa-use-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}

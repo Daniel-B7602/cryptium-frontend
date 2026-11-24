@@ -8,6 +8,7 @@ import {
   ArrowRight,
   ChevronRight,
   Zap,
+  AudioWaveform,
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -25,6 +26,14 @@ const featureCards = [
     title: 'Cifrado de Archivos',
     description: 'Protege cualquier tipo de archivo aplicando cifrado con clave personalizada.',
     to: '/archivos',
+    color: 'cyan',
+    status: 'Disponible',
+  },
+  {
+    icon: AudioWaveform,
+    title: 'Esteganografía de Audio',
+    description: 'Oculta y recupera mensajes cifrados con AES-256-GCM dentro de archivos de audio WAV PCM.',
+    to: '/esteganografia-audio',
     color: 'cyan',
     status: 'Disponible',
   },
@@ -153,9 +162,9 @@ export default function Dashboard() {
         <div className="grid-3 dash-stats-grid">
           <div className="card dash-stat-card">
             <span className="dash-stat-label">Módulos activos</span>
-            <span className="dash-stat-value">2 / 5</span>
+            <span className="dash-stat-value">5 / 5</span>
             <div className="dash-stat-bar">
-              <div className="dash-stat-fill" style={{ width: '40%' }} />
+              <div className="dash-stat-fill" style={{ width: '100%' }} />
             </div>
           </div>
           <div className="card dash-stat-card">

@@ -33,6 +33,12 @@ import {
   FileText,
   Binary,
   Play,
+  Sparkles,
+  Eye,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  ArrowRight,
 } from 'lucide-react';
 import StatusAlert from '../components/StatusAlert';
 import {
@@ -45,6 +51,230 @@ import {
 } from '../services/api';
 import './Analysis.css';
 import './Cryptanalysis.css';
+
+// ─── Presets Demostrativos Pedagógicos (Frecuencias y Entropía) ─────────────
+const STATS_PRESETS = [
+  {
+    id: 'repetitive',
+    title: 'Texto Repetitivo',
+    subtitle: 'Mínima entropía',
+    badge: 'H ≈ 0.0 bits',
+    text: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    key: 'ClaveDemoCryptium2026!',
+    explanation:
+      "Un único byte repetido (100% letra 'A'). Permite observar una barra solitaria del 100% con entropía 0.0 en el texto original, y cómo AES-256 la transforma en un espectro disperso con entropía elevada.",
+  },
+  {
+    id: 'spanish',
+    title: 'Frase en Español',
+    subtitle: 'Lenguaje natural',
+    badge: 'H ≈ 4.1 bits',
+    text: 'En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo.',
+    key: 'ClaveQuijote2026!',
+    explanation:
+      "Prosa real en español con picos notables en vocales ('e', 'a') y espacios (entropía ~4.1 bits/byte). Ilustra cómo el cifrado rompe por completo el sesgo lingüístico del idioma.",
+  },
+  {
+    id: 'symbols',
+    title: 'Caracteres Variados',
+    subtitle: 'Mayor diversidad',
+    badge: 'H ≈ 4.8 bits',
+    text: 'Cryptium#2026! Criptoanalisis: [AES-256 + CBC] -> Seguridad y Criptologia.',
+    key: 'ClaveSimbolos2026!',
+    explanation:
+      'Mezcla de mayúsculas, minúsculas, números y símbolos de puntuación. Demuestra una muestra heterogénea con mayor dispersión inicial y cómo el cifrado borra la distinción de símbolos.',
+  },
+];
+
+// ─── Presets Demostrativos Pedagógicos (Efecto Avalancha - SAC) ────────────
+const SAC_PRESETS = [
+  {
+    id: 'sac-char',
+    title: "Texto: Invertir Bit en 'C'",
+    subtitle: '1 carácter modificado',
+    badge: 'Byte 0, Bit 0',
+    text: 'Criptografia Cryptium 2026',
+    key: 'ClaveExperimental2026!',
+    byteIndex: 0,
+    bitIndex: 0,
+    targetChar: 'C',
+    explanation:
+      "Invierte el bit menos significativo (Bit 0) del primer carácter ('C', 0x43 -> 0x42, 'B'). Observa cómo un cambio imperceptible de 1 solo bit propaga una mutación masiva en ~50% de los bits del criptograma.",
+  },
+  {
+    id: 'sac-repetitive',
+    title: 'Texto Repetitivo',
+    subtitle: 'Ruptura de redundancia',
+    badge: 'Byte 0, Bit 1',
+    text: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    key: 'ClaveSegura2026!',
+    byteIndex: 0,
+    bitIndex: 1,
+    targetChar: 'A',
+    explanation:
+      "Mensaje de 32 letras 'A' idénticas (2 bloques AES de 16 bytes). Al invertir el Bit 1 de la primera letra ('A', 0x41 -> 0x43, 'C'), AES propaga la alteración a través del bloque y del encadenamiento.",
+  },
+  {
+    id: 'sac-extended',
+    title: 'Mensaje Multi-Bloque',
+    subtitle: 'Propagación profunda',
+    badge: 'Byte 1, Bit 3',
+    text: 'Mensaje Confidencial Universitario Cryptium 2026',
+    key: 'ClaveMaestraA2026!',
+    byteIndex: 1,
+    bitIndex: 3,
+    targetChar: 'e',
+    explanation:
+      "Mensaje largo de varios bloques. Invertimos el Bit 3 en el segundo byte ('e', 0x65 -> 0x6D, 'm'). Demuestra que sin importar qué bit o byte se altere, el efecto avalancha se mantiene cercano al 50%.",
+  },
+];
+
+// ─── Presets Demostrativos Pedagógicos (Patrones de Bloques ECB vs CBC) ─────
+const BLOCK_PRESETS = [
+  {
+    id: 'blocks-repeated',
+    title: '3 Bloques Idénticos + 1 Distinto',
+    subtitle: 'Fuga evidente en ECB',
+    badge: '4 bloques (64 bytes)',
+    text: 'CRYPTIUM_BLOCK_1CRYPTIUM_BLOCK_1CRYPTIUM_BLOCK_1BLOQUE_DISTINTO',
+    key: 'ClaveExperimentalModos2026!',
+    explanation:
+      "Los primeros 3 bloques de 16 bytes son exactamente iguales ('CRYPTIUM_BLOCK_1'). En modo ECB, los 3 bloques cifrados resultan 100% IDÉNTICOS, revelando el patrón repetitivo. En CBC, cada bloque cifrado es completamente ÚNICO.",
+  },
+  {
+    id: 'blocks-alternating',
+    title: 'Secuencia Alternada A-B-A-B',
+    subtitle: 'Patrón cíclico',
+    badge: '4 bloques (64 bytes)',
+    text: 'BLOQUE_ALFA_0001BLOQUE_BETA_0002BLOQUE_ALFA_0001BLOQUE_BETA_0002',
+    key: 'ClaveAlternada2026!',
+    explanation:
+      "Patrón de bloques alternados: Bloque 1 y 3 son 'BLOQUE_ALFA_0001', mientras 2 y 4 son 'BLOQUE_BETA_0002'. ECB replica la alternancia exacta en los criptogramas. CBC destruye la correlación cíclica.",
+  },
+  {
+    id: 'blocks-varied',
+    title: 'Texto Continuo Variado',
+    subtitle: 'Sin bloques idénticos',
+    badge: 'Texto en prosa',
+    text: 'Seguridad Informatica Cryptium: Evaluando Modos de Operacion por Bloques',
+    key: 'ClaveVariada2026!',
+    explanation:
+      "Texto sin repeticiones de bloques exactos de 16 bytes. Ni ECB ni CBC muestran bloques duplicados superficiales, pero ECB sigue siendo vulnerable a ataques de reordenamiento de bloques o reemplazo.",
+  },
+];
+
+// ─── Utilidad: Decodificación de Base64 a Matriz de Bits (0 y 1) ───────────
+function decodeBase64ToBits(b64) {
+  if (!b64) return { bytes: new Uint8Array(0), bits: [] };
+  try {
+    const binaryStr = atob(b64);
+    const bytes = new Uint8Array(binaryStr.length);
+    const bits = [];
+    for (let i = 0; i < binaryStr.length; i++) {
+      const byteVal = binaryStr.charCodeAt(i);
+      bytes[i] = byteVal;
+      for (let b = 7; b >= 0; b--) {
+        bits.push((byteVal >> b) & 1);
+      }
+    }
+    return { bytes, bits };
+  } catch (err) {
+    console.error('Error al decodificar Base64 a bits:', err);
+    return { bytes: new Uint8Array(0), bits: [] };
+  }
+}
+
+// ─── Utilidad: Formateo de Símbolos y Bytes para Humanos ───────────────────
+function formatByteSymbol(byteVal) {
+  const num = Number(byteVal);
+  if (num === 32) return { char: 'Espacio (␣)', glyph: '␣', hex: '0x20', dec: 32, isPrintable: true };
+  if (num === 10) return { char: 'Salto de línea (\\n)', glyph: '\\n', hex: '0x0A', dec: 10, isPrintable: false };
+  if (num === 9)  return { char: 'Tabulación (\\t)', glyph: '\\t', hex: '0x09', dec: 9, isPrintable: false };
+  if (num === 13) return { char: 'Retorno (\\r)', glyph: '\\r', hex: '0x0D', dec: 13, isPrintable: false };
+  if (num >= 33 && num <= 126) {
+    const ch = String.fromCharCode(num);
+    return { char: `'${ch}'`, glyph: ch, hex: `0x${num.toString(16).toUpperCase().padStart(2, '0')}`, dec: num, isPrintable: true };
+  }
+  const hexStr = `0x${num.toString(16).toUpperCase().padStart(2, '0')}`;
+  return { char: hexStr, glyph: hexStr, hex: hexStr, dec: num, isPrintable: false };
+}
+
+// ─── Utilidad: Cálculo Local de Estadísticas de Bytes ──────────────────────
+function computeLocalByteStats(text) {
+  if (!text) return { entropy: 0, totalBytes: 0, uniqueBytes: 0, frequency: {} };
+  const bytes = new TextEncoder().encode(text);
+  const freq = {};
+  for (const b of bytes) {
+    freq[b] = (freq[b] || 0) + 1;
+  }
+  let entropy = 0;
+  const len = bytes.length;
+  if (len > 0) {
+    for (const count of Object.values(freq)) {
+      const p = count / len;
+      entropy -= p * Math.log2(p);
+    }
+  }
+  return {
+    entropy: Number(entropy.toFixed(4)),
+    totalBytes: bytes.length,
+    uniqueBytes: Object.keys(freq).length,
+    frequency: freq,
+  };
+}
+
+// ─── Utilidad: Interpretación Dinámica de Resultados ───────────────────────
+function getDynamicInterpretation(plainStats, cipherStats) {
+  if (!plainStats || !cipherStats) return null;
+
+  const pEntropy = plainStats.entropy;
+  const cEntropy = cipherStats.entropy;
+  const pTotal = plainStats.totalBytes;
+  const cTotal = cipherStats.totalBytes;
+  const pUnique = plainStats.uniqueBytes;
+  const cUnique = cipherStats.uniqueBytes;
+
+  // Encontrar el byte más repetido en el texto original
+  let topPlainByte = null;
+  let topPlainCount = 0;
+  for (const [byteVal, count] of Object.entries(plainStats.frequency || {})) {
+    if (count > topPlainCount) {
+      topPlainCount = count;
+      topPlainByte = byteVal;
+    }
+  }
+  const topPlainPct = pTotal > 0 ? ((topPlainCount / pTotal) * 100).toFixed(1) : '0';
+  const topPlainSymbol = topPlainByte !== null ? formatByteSymbol(topPlainByte).char : 'N/A';
+
+  // Encontrar el byte más repetido en el cifrado
+  let topCipherCount = 0;
+  for (const count of Object.values(cipherStats.frequency || {})) {
+    if (count > topCipherCount) topCipherCount = count;
+  }
+  const topCipherPct = cTotal > 0 ? ((topCipherCount / cTotal) * 100).toFixed(1) : '0';
+
+  // 1. ¿Qué estás viendo?
+  let whatSeeing = '';
+  if (pEntropy < 1.0) {
+    whatSeeing = `El texto original presenta una redundancia extrema con una entropía casi nula (${pEntropy.toFixed(4)} bits/byte), donde el símbolo ${topPlainSymbol} concentra el ${topPlainPct}% de todas las apariciones en apenas ${pUnique} valor(es) de byte. En marcado contraste, el texto cifrado alcanza una entropía de ${cEntropy.toFixed(4)} bits/byte distribuida en ${cUnique} bytes únicos, donde ningún byte supera el ${topCipherPct}% del total.`;
+  } else if (pEntropy < 4.5) {
+    whatSeeing = `El texto original refleja la redundancia típica del lenguaje natural (${pEntropy.toFixed(4)} bits/byte), con picos estadísticos prominentes liderados por ${topPlainSymbol} (${topPlainPct}% del mensaje) sobre ${pUnique} símbolos únicos. Tras el cifrado, esos picos lingüísticos desaparecen por completo, alcanzando una entropía de ${cEntropy.toFixed(4)} bits/byte repartida sobre ${cUnique} valores distintos.`;
+  } else {
+    whatSeeing = `El texto original ya contaba con una variedad apreciable (${pEntropy.toFixed(4)} bits/byte sobre ${pUnique} símbolos). Sin embargo, el cifrado AES-256 homogeniza aún más los datos, elevando la entropía a ${cEntropy.toFixed(4)} bits/byte y extendiendo la dispersión a ${cUnique} valores de byte.`;
+  }
+
+  // 2. ¿Por qué ocurre?
+  const whyOccurs = `El algoritmo AES-256 aplica los principios criptográficos fundamentales de confusión y difusión. Mediante transformaciones de sustitución (Cajas-S) y mezclas algebraicas de columnas (MixColumns), cada bit del mensaje se combina con los 256 bits de la clave. Esto elimina la estructura sintáctica y la frecuencia original de las letras, convirtiendo las frecuencias desiguales en una distribución cuasi-uniforme indistinguible de ruido estadístico aleatorio.`;
+
+  // 3. ¿Qué debes tener en cuenta?
+  const caveats = [
+    'Una entropía alta indica una distribución más uniforme de los datos, pero no garantiza por sí sola que un cifrado sea seguro.',
+    'Archivos comprimidos (como .zip o .mp3) o secuencias seudoaleatorias generadas por algoritmos débiles también pueden exhibir alta entropía superficial sin ofrecer verdadera resistencia criptográfica.',
+    'La seguridad depende de la robustez matemática del algoritmo y de la confidencialidad de la clave, no únicamente de métricas de dispersión estadística.',
+  ];
+
+  return { whatSeeing, whyOccurs, caveats, topPlainSymbol, topPlainPct, topCipherPct };
+}
 
 // ─── Componentes Auxiliares Compartidos ────────────────────────────────────
 
@@ -67,22 +297,58 @@ function MetricCard({ icon, label, value, description, highlight, badge }) {
 // ─── Tooltip Personalizado para Gráfica de Frecuencias de Bytes ─────────────
 function ByteFrequencyTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
-  const { byteValue, count } = payload[0].payload;
-  const hex = Number(byteValue).toString(16).toUpperCase().padStart(2, '0');
+  const data = payload[0].payload;
+  const isPlain = data.type === 'plain';
+  const num = Number(data.byteValue !== undefined ? data.byteValue : data.dec);
+  const sym = formatByteSymbol(num);
+  const count = data.count || 0;
+  const pct = data.percentage !== undefined ? `${data.percentage}%` : null;
+
   return (
-    <div className="an-chart-tooltip">
-      <div className="an-tt-row">
-        <span className="an-tt-label">Byte Decimal</span>
-        <span className="an-tt-value mono">{byteValue}</span>
+    <div className="an-chart-tooltip" style={{ minWidth: '190px' }}>
+      <div
+        className="an-tt-row"
+        style={{
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          paddingBottom: '5px',
+          marginBottom: '5px',
+        }}
+      >
+        <span
+          className="an-tt-label"
+          style={{ fontWeight: 700, color: isPlain ? '#c084fc' : '#00d4ff' }}
+        >
+          {isPlain ? 'Texto Original' : 'Texto Cifrado'}
+        </span>
+        <span className="an-tt-value mono" style={{ fontSize: '0.88rem', fontWeight: 800 }}>
+          {sym.char}
+        </span>
       </div>
       <div className="an-tt-row">
         <span className="an-tt-label">Hexadecimal</span>
-        <span className="an-tt-value mono" style={{ color: 'var(--clr-accent)' }}>0x{hex}</span>
+        <span
+          className="an-tt-value mono"
+          style={{ color: isPlain ? '#c084fc' : 'var(--clr-accent)' }}
+        >
+          {sym.hex}
+        </span>
       </div>
       <div className="an-tt-row">
-        <span className="an-tt-label">Frecuencia</span>
-        <span className="an-tt-value" style={{ fontWeight: 700 }}>{count}</span>
+        <span className="an-tt-label">Decimal</span>
+        <span className="an-tt-value mono">{num}</span>
       </div>
+      <div className="an-tt-row">
+        <span className="an-tt-label">Apariciones</span>
+        <span className="an-tt-value" style={{ fontWeight: 700 }}>
+          {count}
+        </span>
+      </div>
+      {pct && (
+        <div className="an-tt-row">
+          <span className="an-tt-label">Frecuencia Relativa</span>
+          <span className="an-tt-value mono">{pct}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -167,6 +433,91 @@ function EntropyGauge({ entropy }) {
   );
 }
 
+// ─── Gauge Visual Comparativo de Entropía Dual (Texto Original vs Cifrado) ──
+function DualEntropyGauge({ plainEntropy, cipherEntropy }) {
+  const max = 8.0;
+  const pVal = typeof plainEntropy === 'number' && !isNaN(plainEntropy) ? plainEntropy : Number(plainEntropy) || 0;
+  const cVal = typeof cipherEntropy === 'number' && !isNaN(cipherEntropy) ? cipherEntropy : Number(cipherEntropy) || 0;
+  const pPct = Math.min((pVal / max) * 100, 100);
+  const cPct = Math.min((cVal / max) * 100, 100);
+  const delta = cVal - pVal;
+  const [showFormula, setShowFormula] = useState(false);
+
+  return (
+    <div className="card an-dual-entropy-card">
+      <div className="an-dual-entropy-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Zap size={18} className="text-accent" />
+          <span style={{ fontSize: '0.94rem', fontWeight: 700, color: 'var(--txt-primary)' }}>
+            Comparativa de Entropía de Shannon (0.0 a 8.0 bits / byte)
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <span className="an-delta-badge">
+            <ArrowRight size={14} /> Salto de Incertidumbre: {delta >= 0 ? `+${delta.toFixed(4)}` : delta.toFixed(4)} bits/byte
+          </span>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            style={{ fontSize: '0.74rem', padding: '4px 8px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+            onClick={() => setShowFormula(!showFormula)}
+          >
+            <BookOpen size={13} /> {showFormula ? 'Ocultar Concepto' : '¿Por qué máx 8.0?'}
+          </button>
+        </div>
+      </div>
+
+      {/* Explicación didáctica colapsable de los 8 bits */}
+      {showFormula && (
+        <div className="an-preset-explanation animate-fade-in" style={{ margin: '4px 0 10px 0' }}>
+          <strong>Fundamento Matemático y Teórico:</strong> La entropía de Shannon mide la incertidumbre promedio por símbolo en bits:{' '}
+          <code>H = -Σ p(x) · log₂(p(x))</code>. Dado que un byte está compuesto por exactamente 8 bits, existen{' '}
+          <code>2⁸ = 256</code> valores posibles (0 a 255). Si los 256 valores se presentaran con probabilidad idéntica y uniforme (1/256 cada uno), la incertidumbre máxima es{' '}
+          <code>log₂(256) = 8.0 bits por byte</code>. Un texto con alta redundancia o repetición tiene entropía baja, mientras que un cifrado simétrico robusto como AES-256 eleva la dispersión hacia el límite teórico de 8.0.
+        </div>
+      )}
+
+      {/* Pista gráfica con ambos marcadores superpuestos */}
+      <div className="an-entropy-track-wrapper">
+        <div className="an-entropy-track">
+          <div className="an-entropy-gradient-bar" />
+
+          {/* Marcador Texto Original (Púrpura) */}
+          <div
+            className="an-entropy-pin an-entropy-pin--plain"
+            style={{ left: `${pPct}%` }}
+            title={`Texto Original: ${pVal.toFixed(4)} bits/byte`}
+          >
+            <div className="an-entropy-pin-head" />
+            <span className="an-entropy-pin-label mono">
+              Original: {pVal.toFixed(2)}
+            </span>
+          </div>
+
+          {/* Marcador Texto Cifrado (Cian) */}
+          <div
+            className="an-entropy-pin an-entropy-pin--cipher"
+            style={{ left: `${cPct}%` }}
+            title={`Texto Cifrado: ${cVal.toFixed(4)} bits/byte`}
+          >
+            <div className="an-entropy-pin-head" />
+            <span className="an-entropy-pin-label mono">
+              Cifrado: {cVal.toFixed(2)}
+            </span>
+          </div>
+        </div>
+
+        <div className="an-entropy-legend-row mono">
+          <span>0.0 (Predecible / Redundante)</span>
+          <span>4.0 (Lenguaje Natural)</span>
+          <span>7.0 (Umbral Criptográfico)</span>
+          <span>8.0 (Límite Teórico Máx)</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Gauge Visual del Efecto Avalancha (SAC) ───────────────────────────────
 function AvalancheGauge({ percentage, differentBits, totalBits }) {
   const numPct = typeof percentage === 'number' && !isNaN(percentage) ? percentage : Number(percentage) || 0;
@@ -224,6 +575,347 @@ function AvalancheGauge({ percentage, differentBits, totalBits }) {
           <div className="an-av-pill">
             <span className="an-av-pill-label">Desviación:</span>
             <span className="an-av-pill-val mono">Δ {Math.abs(percentage - 50).toFixed(2)}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Visualizador Matricial de Bits del Criptograma (Bit Matrix Visualizer) ──
+function BitMatrixVisualizer({ originalBase64, modifiedBase64, differentBits, totalBits, percentage }) {
+  const origDecoded = decodeBase64ToBits(originalBase64);
+  const modDecoded = decodeBase64ToBits(modifiedBase64);
+  const total = totalBits || origDecoded.bits.length;
+
+  if (!total || origDecoded.bits.length === 0 || modDecoded.bits.length === 0) {
+    return null;
+  }
+
+  // Agrupar en filas de 32 bits (4 bytes por fila) para legibilidad óptima
+  const rowSize = 32;
+  const rowsCount = Math.ceil(total / rowSize);
+  const rows = [];
+
+  for (let r = 0; r < rowsCount; r++) {
+    const startIdx = r * rowSize;
+    const endIdx = Math.min(startIdx + rowSize, total);
+    const rowBits = [];
+    for (let i = startIdx; i < endIdx; i++) {
+      const origBit = origDecoded.bits[i] ?? 0;
+      const modBit = modDecoded.bits[i] ?? 0;
+      const isFlipped = origBit !== modBit;
+      const byteIdx = Math.floor(i / 8);
+      const bitInByte = 7 - (i % 8);
+      rowBits.push({
+        index: i,
+        byteIdx,
+        bitInByte,
+        origBit,
+        modBit,
+        isFlipped,
+      });
+    }
+    rows.push({
+      rowIndex: r,
+      startIdx,
+      endIdx: endIdx - 1,
+      bits: rowBits,
+    });
+  }
+
+  const diffCount = differentBits !== undefined ? differentBits : rows.flatMap((r) => r.bits).filter((b) => b.isFlipped).length;
+  const sameCount = total - diffCount;
+  const diffPct = percentage !== undefined ? percentage : (diffCount / total) * 100;
+
+  return (
+    <div className="an-bitgrid-card">
+      <div className="an-bitgrid-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Sparkles size={18} style={{ color: '#00d4ff' }} />
+          <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: '#fff' }}>
+            Visualizador Matricial de Bits del Criptograma (C vs C')
+          </h4>
+        </div>
+        <div className="an-bitgrid-legend">
+          <div className="an-bitgrid-legend-item">
+            <span className="an-bitgrid-dot an-bitgrid-dot--flipped" />
+            <span style={{ color: '#00d4ff', fontWeight: 600 }}>Bit Mutado ({diffCount})</span>
+          </div>
+          <div className="an-bitgrid-legend-item">
+            <span className="an-bitgrid-dot an-bitgrid-dot--same" />
+            <span style={{ color: 'var(--txt-muted)' }}>Bit Idéntico ({sameCount})</span>
+          </div>
+        </div>
+      </div>
+
+      <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--txt-secondary)' }}>
+        Pasa el cursor sobre cualquier casilla para inspeccionar la posición exacta del bit y su transición. Cada celda iluminada en cian neón representa un bit del criptograma que cambió como resultado del bit invertido en la entrada.
+      </p>
+
+      <div className="an-bitgrid-container">
+        {rows.map((row) => (
+          <div key={`row-${row.rowIndex}`} className="an-bitgrid-row">
+            <span className="an-bitgrid-row-label">
+              B{String(row.startIdx).padStart(3, '0')}-{String(row.endIdx).padStart(3, '0')}
+            </span>
+            <div className="an-bitgrid-cells">
+              {row.bits.map((b) => (
+                <div
+                  key={`bit-${b.index}`}
+                  className={`an-bit-cell ${b.isFlipped ? 'an-bit-cell--flipped' : 'an-bit-cell--same'}`}
+                  title={`Bit #${b.index} (Byte ${b.byteIdx}, Bit ${b.bitInByte}): ${b.origBit} → ${b.modBit} ${
+                    b.isFlipped ? '★ ¡MUTÓ!' : '(Sin cambio)'
+                  }`}
+                >
+                  {b.modBit}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="an-bitgrid-stats-footer">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+          <span>
+            Total analizado: <strong className="mono" style={{ color: '#fff' }}>{total} bits</strong> ({total / 8} bytes)
+          </span>
+          <span>
+            Mutados: <strong className="mono" style={{ color: '#00d4ff' }}>{diffCount} ({diffPct.toFixed(2)}%)</strong>
+          </span>
+          <span>
+            Conservados: <strong className="mono" style={{ color: 'var(--txt-secondary)' }}>{sameCount} ({(100 - diffPct).toFixed(2)}%)</strong>
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '0.74rem', color: 'var(--txt-muted)' }}>Objetivo SAC:</span>
+          <span className="badge badge-green" style={{ fontSize: '0.72rem' }}>50% Difusión Uniforme</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Selector Interactivo del Bit a Invertir (BitInputInspectCard) ─────────
+function BitInputInspectCard({ text, byteIndex, bitIndex, onByteChange, onBitChange }) {
+  const safeText = text || ' ';
+  const maxByte = Math.max(0, safeText.length - 1);
+  const safeByteIdx = Math.min(Math.max(0, byteIndex), maxByte);
+  const origChar = safeText[safeByteIdx] || ' ';
+  const origByte = safeText.charCodeAt(safeByteIdx) || 0;
+  const origHex = origByte.toString(16).toUpperCase().padStart(2, '0');
+
+  // Cálculo simulado del byte mutado
+  const mask = 1 << bitIndex;
+  const modByte = origByte ^ mask;
+  const modChar = modByte >= 32 && modByte <= 126 ? String.fromCharCode(modByte) : '·';
+  const modHex = modByte.toString(16).toUpperCase().padStart(2, '0');
+
+  return (
+    <div className="card" style={{ padding: '18px 20px', background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Sliders size={18} style={{ color: 'var(--clr-accent)' }} />
+          <strong style={{ fontSize: '0.94rem', color: '#fff' }}>
+            Selector Interactivo del Bit a Invertir
+          </strong>
+        </div>
+        <div className="an-sac-byte-select-row">
+          <label style={{ fontSize: '0.8rem', color: 'var(--txt-secondary)' }}>
+            Posición del carácter (Byte):
+          </label>
+          <input
+            type="number"
+            min={0}
+            max={maxByte}
+            value={safeByteIdx}
+            onChange={(e) => onByteChange(Math.min(Math.max(0, Number(e.target.value) || 0), maxByte))}
+            className="form-input mono"
+            style={{ width: '68px', padding: '4px 8px', fontSize: '0.82rem', textAlign: 'center' }}
+          />
+          <span className="an-sac-byte-idx-badge">
+            Carácter: '{origChar}' (0x{origHex})
+          </span>
+        </div>
+      </div>
+
+      <div className="an-sac-input-compare">
+        {/* Byte Original */}
+        <div className="an-sac-byte-card">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.74rem', color: 'var(--txt-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Byte Original (Entrada P)
+            </span>
+            <span className="badge badge-accent mono">0x{origHex}</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+            <span className="mono" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--clr-accent)' }}>
+              '{origChar}'
+            </span>
+            <span className="mono" style={{ fontSize: '0.9rem', color: 'var(--txt-secondary)' }}>
+              Decimal: {origByte}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--txt-muted)' }}>
+              Haz clic en cualquiera de los 8 bits para seleccionarlo:
+            </span>
+            <div className="an-sac-bits-row">
+              {[7, 6, 5, 4, 3, 2, 1, 0].map((b) => {
+                const bitVal = (origByte >> b) & 1;
+                const isSelected = b === bitIndex;
+                const isMsb = b === 7;
+                const isLsb = b === 0;
+                return (
+                  <button
+                    key={`bit-btn-${b}`}
+                    type="button"
+                    className={`an-sac-bit-pill ${isSelected ? 'an-sac-bit-pill--selected' : ''} ${
+                      isMsb ? 'an-sac-bit-pill--msb' : isLsb ? 'an-sac-bit-pill--lsb' : ''
+                    }`}
+                    onClick={() => onBitChange(b)}
+                    title={`Bit ${b} (${isMsb ? 'MSB - Más significativo' : isLsb ? 'LSB - Menos significativo' : 'Bit intermedio'}). Clic para invertir.`}
+                  >
+                    <span style={{ color: isSelected ? '#f43f5e' : '#fff' }}>{bitVal}</span>
+                    <span className="an-sac-bit-idx">{isMsb ? 'M' : isLsb ? 'L' : b}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--txt-muted)', marginTop: '2px' }}>
+              <span>← MSB (Bit 7, peso 128)</span>
+              <span>LSB (Bit 0, peso 1) →</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Byte Alterado */}
+        <div className="an-sac-byte-card an-sac-byte-card--mod">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.74rem', color: '#f43f5e', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Byte Resultante (Entrada P')
+            </span>
+            <span className="badge badge-rose mono">0x{modHex}</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+            <span className="mono" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f43f5e' }}>
+              '{modChar}'
+            </span>
+            <span className="mono" style={{ fontSize: '0.9rem', color: 'var(--txt-secondary)' }}>
+              Decimal: {modByte}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '0.72rem', color: '#f43f5e' }}>
+              Bit #{bitIndex} invertido ({((origByte >> bitIndex) & 1)} → {((modByte >> bitIndex) & 1)}):
+            </span>
+            <div className="an-sac-bits-row">
+              {[7, 6, 5, 4, 3, 2, 1, 0].map((b) => {
+                const bitVal = (modByte >> b) & 1;
+                const isFlipped = b === bitIndex;
+                return (
+                  <div
+                    key={`mod-bit-${b}`}
+                    className={`an-sac-bit-pill ${isFlipped ? 'an-sac-bit-pill--flipped' : ''}`}
+                  >
+                    <span>{bitVal}</span>
+                    <span className="an-sac-bit-idx">{b}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--txt-muted)', marginTop: '4px' }}>
+              Diferencia binaria exacta: <strong>1 solo bit alterado</strong> en todo el mensaje.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Diagrama Didáctico Comparativo ECB vs CBC (BlockOperationDiagram) ─────
+function BlockOperationDiagram() {
+  return (
+    <div className="card" style={{ padding: '20px', background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+        <GitCompare size={18} className="text-accent" />
+        <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 700, color: '#fff' }}>
+          Mecanismo Interno: ¿Por qué ECB filtra patrones y CBC los destruye?
+        </h4>
+      </div>
+
+      <div className="an-block-diagram">
+        {/* Columna ECB */}
+        <div className="an-diagram-card an-diagram-card--ecb">
+          <div className="an-diagram-title">
+            <span style={{ color: '#f43f5e' }}>Modo ECB (Electronic Codebook)</span>
+            <span className="badge badge-rose" style={{ fontSize: '0.7rem' }}>Inseguro / Sin Memoria</span>
+          </div>
+
+          <p className="an-diagram-subtext">
+            Cada bloque de 16 bytes se cifra de forma <strong>estrictamente aislada</strong> con la clave. No existe ningún vector de inicialización ni enlace entre bloques.
+          </p>
+
+          <div className="an-diagram-flow">
+            <div className="an-diagram-step">
+              <span>Bloque 1 ("BLOQUE_A")</span>
+              <span>──► [AES(K)] ──►</span>
+              <strong style={{ color: '#f43f5e' }}>Cifrado X</strong>
+            </div>
+            <div className="an-diagram-step an-diagram-step--match">
+              <span>Bloque 2 ("BLOQUE_A")</span>
+              <span>──► [AES(K)] ──►</span>
+              <strong>Cifrado X (¡Idéntico!)</strong>
+            </div>
+            <div className="an-diagram-step">
+              <span>Bloque 3 ("BLOQUE_B")</span>
+              <span>──► [AES(K)] ──►</span>
+              <span>Cifrado Y</span>
+            </div>
+          </div>
+
+          <div style={{ fontSize: '0.75rem', color: '#f43f5e', background: 'rgba(244,63,94,0.1)', padding: '8px 10px', borderRadius: '4px', border: '1px solid rgba(244,63,94,0.25)' }}>
+            ⚠ <strong>Fuga de Información:</strong> Si el mensaje tiene bloques repetidos, el criptograma replica exactamente esa misma silueta (famoso caso Tux).
+          </div>
+        </div>
+
+        {/* Columna CBC */}
+        <div className="an-diagram-card an-diagram-card--cbc">
+          <div className="an-diagram-title">
+            <span style={{ color: '#10d46e' }}>Modo CBC (Cipher Block Chaining)</span>
+            <span className="badge badge-green" style={{ fontSize: '0.7rem' }}>Seguro / Con Encadenamiento</span>
+          </div>
+
+          <p className="an-diagram-subtext">
+            Cada bloque se combina con <strong>XOR (⊕)</strong> con el bloque cifrado anterior antes de cifrarse. El primer bloque se combina con un <strong>IV aleatorio único</strong>.
+          </p>
+
+          <div className="an-diagram-flow">
+            <div className="an-diagram-step">
+              <span>Bloque 1 ⊕ [IV Aleat]</span>
+              <span>──► [AES(K)] ──►</span>
+              <strong style={{ color: '#10d46e' }}>Cifrado A</strong>
+            </div>
+            <div className="an-diagram-step an-diagram-step--diff">
+              <span>Bloque 2 ⊕ [Cifrado A]</span>
+              <span>──► [AES(K)] ──►</span>
+              <strong>Cifrado B (¡Diferente!)</strong>
+            </div>
+            <div className="an-diagram-step">
+              <span>Bloque 3 ⊕ [Cifrado B]</span>
+              <span>──► [AES(K)] ──►</span>
+              <span>Cifrado C (¡Diferente!)</span>
+            </div>
+          </div>
+
+          <div style={{ fontSize: '0.75rem', color: '#10d46e', background: 'rgba(16,212,110,0.1)', padding: '8px 10px', borderRadius: '4px', border: '1px solid rgba(16,212,110,0.25)' }}>
+            ✓ <strong>Difusión Total:</strong> Aunque "BLOQUE_A" se repita 100 veces, cada bloque cifrado es matemáticamente impredecible y diferente a todos los demás.
           </div>
         </div>
       </div>
@@ -296,6 +988,9 @@ function AnalysisContent() {
   const [statsStatus, setStatsStatus] = useState(null);
   const [statsResult, setStatsResult] = useState(null);
   const [statsCopied, setStatsCopied] = useState(false);
+  const [statsActivePreset, setStatsActivePreset] = useState(null);
+  const [statsChartTab, setStatsChartTab] = useState('compare'); // 'compare' | 'plain' | 'cipher'
+  const [statsFilterMode, setStatsFilterMode] = useState('active'); // 'active' | 'all'
   const statsResultsRef = useRef(null);
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -306,6 +1001,11 @@ function AnalysisContent() {
   // Avalancha Individual
   const [avText, setAvText] = useState('Criptografia Cryptium 2026');
   const [avKey, setAvKey] = useState('ClaveExperimental2026!');
+  const [avByteIndex, setAvByteIndex] = useState(0);
+  const [avBitIndex, setAvBitIndex] = useState(0);
+  const [avActivePreset, setAvActivePreset] = useState(null);
+  const [avCopiedOrig, setAvCopiedOrig] = useState(false);
+  const [avCopiedMod, setAvCopiedMod] = useState(false);
   const [avLoading, setAvLoading] = useState(false);
   const [avStatus, setAvStatus] = useState(null);
   const [avResult, setAvResult] = useState(null);
@@ -328,6 +1028,7 @@ function AnalysisContent() {
     'CRYPTIUM_BLOCK_1CRYPTIUM_BLOCK_1CRYPTIUM_BLOCK_1BLOQUE_DISTINTO'
   );
   const [blocksKey, setBlocksKey] = useState('ClaveExperimentalModos2026!');
+  const [blocksActivePreset, setBlocksActivePreset] = useState(null);
   const [blocksLoading, setBlocksLoading] = useState(false);
   const [blocksStatus, setBlocksStatus] = useState(null);
   const [blocksResult, setBlocksResult] = useState(null);
@@ -363,14 +1064,18 @@ function AnalysisContent() {
         }
 
         const data = await analyzeText(statsText, statsKey);
+        const localPlain = computeLocalByteStats(statsText);
         setStatsResult({
           source: 'text',
+          originalText: statsText,
+          originalKey: statsKey,
           encryptedText: data.encryptedText,
           entropy: data.entropy,
           totalBytes: data.totalBytes,
           uniqueBytes: data.uniqueBytes,
           frequency: data.frequency,
           duplicatedBlocksCount: 0,
+          plaintext: data.plaintext || localPlain,
         });
         setStatsStatus({
           type: 'success',
@@ -428,6 +1133,41 @@ function AnalysisContent() {
     }
   };
 
+  // ─── Handlers de Selección de Presets Pedagógicos ─────────────────────────
+  const handleSelectSacPreset = (preset) => {
+    setAvActivePreset(preset.id);
+    setAvText(preset.text);
+    setAvKey(preset.key);
+    setAvByteIndex(preset.byteIndex ?? 0);
+    setAvBitIndex(preset.bitIndex ?? 0);
+    setAvStatus(null);
+    setAvResult(null);
+  };
+
+  const handleSelectBlocksPreset = (preset) => {
+    setBlocksActivePreset(preset.id);
+    setBlocksText(preset.text);
+    setBlocksKey(preset.key);
+    setBlocksStatus(null);
+    setBlocksResult(null);
+  };
+
+  const handleCopyCiphertext = async (text, target) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      if (target === 'orig') {
+        setAvCopiedOrig(true);
+        setTimeout(() => setAvCopiedOrig(false), 2000);
+      } else {
+        setAvCopiedMod(true);
+        setTimeout(() => setAvCopiedMod(false), 2000);
+      }
+    } catch {
+      setAvStatus({ type: 'error', message: 'No se pudo copiar al portapapeles.' });
+    }
+  };
+
   // ─── Handlers Sección B: Efecto Avalancha ─────────────────────────────────
   const handleRunAvalancheSingle = async () => {
     if (!avText.trim() || !avKey.trim()) {
@@ -440,7 +1180,7 @@ function AnalysisContent() {
     setAvResult(null);
 
     try {
-      const data = await testAvalanche(avText, avKey);
+      const data = await testAvalanche(avText, avKey, avByteIndex, avBitIndex);
       setAvResult(data);
       setAvStatus({
         type: 'success',
@@ -581,12 +1321,97 @@ function AnalysisContent() {
     }
   };
 
-  // Datos preparados para la gráfica de frecuencias (0 a 255)
-  const frequencyChartData = statsResult?.frequency
-    ? Object.entries(statsResult.frequency)
-        .map(([byteValue, count]) => ({ byteValue: Number(byteValue), count }))
-        .sort((a, b) => a.byteValue - b.byteValue)
-    : [];
+  // ─── Preparación de Datos: Texto Original (Entrada en Claro) ──────────────
+  const plainFreqMap = statsResult?.plaintext?.frequency || {};
+  const plainTotal = statsResult?.plaintext?.totalBytes || 0;
+
+  const plainChartDataActive = Object.entries(plainFreqMap)
+    .map(([byteValue, count]) => {
+      const num = Number(byteValue);
+      const sym = formatByteSymbol(num);
+      const percentage = plainTotal > 0 ? Number(((count / plainTotal) * 100).toFixed(1)) : 0;
+      return {
+        byteValue: num,
+        label: sym.glyph,
+        fullLabel: sym.char,
+        hex: sym.hex,
+        dec: num,
+        count,
+        percentage,
+        type: 'plain',
+      };
+    })
+    .sort((a, b) => b.count - a.count || a.byteValue - b.byteValue);
+
+  const plainChartDataFull = Array.from({ length: 256 }, (_, i) => {
+    const count = plainFreqMap[i] || 0;
+    const sym = formatByteSymbol(i);
+    const percentage = plainTotal > 0 ? Number(((count / plainTotal) * 100).toFixed(1)) : 0;
+    return {
+      byteValue: i,
+      label: i % 32 === 0 ? `0x${i.toString(16).toUpperCase().padStart(2, '0')}` : '',
+      fullLabel: sym.char,
+      hex: sym.hex,
+      dec: i,
+      count,
+      percentage,
+      type: 'plain',
+    };
+  });
+
+  // ─── Preparación de Datos: Texto Cifrado (Salida AES-256) ──────────────────
+  const cipherFreqMap = statsResult?.frequency || {};
+  const cipherTotal = statsResult?.totalBytes || 0;
+
+  const cipherChartDataActive = Object.entries(cipherFreqMap)
+    .map(([byteValue, count]) => {
+      const num = Number(byteValue);
+      const sym = formatByteSymbol(num);
+      const percentage = cipherTotal > 0 ? Number(((count / cipherTotal) * 100).toFixed(1)) : 0;
+      return {
+        byteValue: num,
+        label: sym.hex,
+        fullLabel: sym.char,
+        hex: sym.hex,
+        dec: num,
+        count,
+        percentage,
+        type: 'cipher',
+      };
+    })
+    .sort((a, b) => b.count - a.count || a.byteValue - b.byteValue);
+
+  const cipherChartDataFull = Array.from({ length: 256 }, (_, i) => {
+    const count = cipherFreqMap[i] || 0;
+    const sym = formatByteSymbol(i);
+    const percentage = cipherTotal > 0 ? Number(((count / cipherTotal) * 100).toFixed(1)) : 0;
+    return {
+      byteValue: i,
+      label: i % 32 === 0 ? `0x${i.toString(16).toUpperCase().padStart(2, '0')}` : '',
+      fullLabel: sym.char,
+      hex: sym.hex,
+      dec: i,
+      count,
+      percentage,
+      type: 'cipher',
+    };
+  });
+
+  // Top 5 Símbolos del Texto Original (Picos de Frecuencia Lingüística)
+  const topPlainChips = plainChartDataActive.slice(0, 5);
+
+  // Top 5 Bytes del Cifrado (Aplanamiento y Uniformidad)
+  const topCipherChips = cipherChartDataActive.slice(0, 5);
+
+  // Interpretación dinámica estructurada según resultados reales
+  const dynamicInterp = statsResult?.plaintext
+    ? getDynamicInterpretation(statsResult.plaintext, statsResult)
+    : null;
+
+  // Datos de compatibilidad para gráfica individual de 256 barras
+  const frequencyChartData = statsFilterMode === 'active'
+    ? cipherChartDataActive
+    : cipherChartDataFull;
 
   // Datos preparados para la gráfica de avalancha por lotes
   const batchChartData = batchResult?.samples?.map((s) => ({
@@ -677,47 +1502,91 @@ function AnalysisContent() {
             </div>
 
             {statsInputMode === 'text' ? (
-              <div className="an-input-grid">
-                <div className="form-group">
-                  <label className="form-label">Texto en claro a cifrar y evaluar:</label>
-                  <textarea
-                    className="form-input an-textarea"
-                    value={statsText}
-                    onChange={(e) => setStatsText(e.target.value)}
-                    placeholder="Introduce el texto a analizar..."
-                  />
-                  <div className="an-counters">
-                    <span>{statsText.length} caracteres</span>
-                    <span>{new Blob([statsText]).size} bytes UTF-8</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Barra de Presets Demostrativos con Explicación Pedagógica */}
+                <div className="an-presets-wrapper">
+                  <div className="an-presets-bar">
+                    <span className="an-presets-label">
+                      <Sparkles size={14} className="text-accent" /> Ejemplos de prueba:
+                    </span>
+                    {STATS_PRESETS.map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        className={`an-preset-pill ${statsActivePreset === p.id ? 'an-preset-pill--active' : ''}`}
+                        onClick={() => {
+                          setStatsText(p.text);
+                          setStatsKey(p.key);
+                          setStatsActivePreset(p.id);
+                          setStatsResult(null);
+                        }}
+                      >
+                        <span>{p.title}</span>
+                        <span className="an-preset-badge">{p.badge}</span>
+                      </button>
+                    ))}
                   </div>
+                  {statsActivePreset && (
+                    <div className="an-preset-explanation animate-fade-in">
+                      <strong>Propósito didáctico:</strong>{' '}
+                      {STATS_PRESETS.find((p) => p.id === statsActivePreset)?.explanation}
+                    </div>
+                  )}
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Clave de cifrado simétrico:</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={statsKey}
-                    onChange={(e) => setStatsKey(e.target.value)}
-                    placeholder="Clave para generar el criptograma..."
-                  />
-                  <div style={{ marginTop: '16px', display: 'flex', gap: '10px' }}>
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={handleExecuteStats}
-                      disabled={statsLoading}
-                    >
-                      {statsLoading ? <RefreshCw size={16} className="spinner" /> : <Play size={16} />}
-                      Ejecutar Análisis Estadístico
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => { setStatsText(''); setStatsKey(''); setStatsResult(null); }}
-                    >
-                      Limpiar
-                    </button>
+                <div className="an-input-grid">
+                  <div className="form-group">
+                    <label className="form-label">Texto en claro a cifrar y evaluar:</label>
+                    <textarea
+                      className="form-input an-textarea"
+                      value={statsText}
+                      onChange={(e) => {
+                        setStatsText(e.target.value);
+                        setStatsActivePreset(null);
+                      }}
+                      placeholder="Introduce el texto a analizar..."
+                    />
+                    <div className="an-counters">
+                      <span>{statsText.length} caracteres</span>
+                      <span>{new Blob([statsText]).size} bytes UTF-8</span>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Clave de cifrado simétrico (AES-256):</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={statsKey}
+                      onChange={(e) => {
+                        setStatsKey(e.target.value);
+                        setStatsActivePreset(null);
+                      }}
+                      placeholder="Clave para generar el criptograma..."
+                    />
+                    <div style={{ marginTop: '16px', display: 'flex', gap: '10px' }}>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleExecuteStats}
+                        disabled={statsLoading}
+                      >
+                        {statsLoading ? <RefreshCw size={16} className="spinner" /> : <Play size={16} />}
+                        Ejecutar Análisis Estadístico
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          setStatsText('');
+                          setStatsKey('');
+                          setStatsActivePreset(null);
+                          setStatsResult(null);
+                        }}
+                      >
+                        Limpiar
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -768,59 +1637,375 @@ function AnalysisContent() {
 
           {statsStatus && <StatusAlert status={statsStatus} />}
 
-          {/* Resultados Estadísticos */}
+          {/* ════════════ RESULTADOS ESTADÍSTICOS COMPARATIVOS ════════════ */}
           {statsResult && (
-            <div ref={statsResultsRef} className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: 0, width: '100%' }}>
-              {/* Tarjetas Métricas */}
-              <div className="an-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', width: '100%' }}>
-                <MetricCard
-                  icon={<Zap size={20} className="text-accent" />}
-                  label="Entropía de Shannon"
-                  value={`${statsResult.entropy.toFixed(4)}`}
-                  description="Bits de incertidumbre por byte (Máximo ideal: 8.0)"
-                  highlight={statsResult.entropy >= 7.0}
-                  badge={{
-                    text: statsResult.entropy >= 7.0 ? 'Alta Aleatoriedad' : 'Baja Dispersión',
-                    className: statsResult.entropy >= 7.0 ? 'badge-accent' : 'badge-amber',
-                  }}
-                />
+            <div ref={statsResultsRef} className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '22px', minWidth: 0, width: '100%' }}>
 
-                <MetricCard
-                  icon={<FileText size={20} />}
-                  label="Total de Bytes"
-                  value={statsResult.totalBytes}
-                  description="Longitud evaluada del criptograma binario"
-                />
+              {/* 1. COMPARATIVA DUAL DE ESTADOS: TEXTO ORIGINAL VS TEXTO CIFRADO */}
+              {statsResult.plaintext ? (
+                <div className="an-dual-metrics-grid">
+                  {/* Tarjeta Estado Original */}
+                  <div className="an-state-card an-state-card--plain">
+                    <div className="an-state-header">
+                      <div className="an-state-title-group">
+                        <FileText size={18} style={{ color: '#c084fc' }} />
+                        <span className="an-state-title">1. Mensaje Original en Claro</span>
+                      </div>
+                      <span className="an-state-badge an-state-badge--plain">Entrada</span>
+                    </div>
 
-                <MetricCard
-                  icon={<Binary size={20} />}
-                  label="Bytes Únicos Presentes"
-                  value={`${statsResult.uniqueBytes} / 256`}
-                  description={`Cobertura de símbolos: ${Math.round((statsResult.uniqueBytes / 256) * 100)}%`}
-                />
+                    <div className="an-state-metrics-row">
+                      <div className="an-mini-metric">
+                        <span className="an-mini-metric-label">Entropía Shannon</span>
+                        <span className="an-mini-metric-val mono" style={{ color: '#c084fc' }}>
+                          {statsResult.plaintext.entropy.toFixed(4)}
+                        </span>
+                        <span className="an-mini-metric-sub">bits / byte</span>
+                      </div>
+                      <div className="an-mini-metric">
+                        <span className="an-mini-metric-label">Total Bytes UTF-8</span>
+                        <span className="an-mini-metric-val mono">{statsResult.plaintext.totalBytes}</span>
+                        <span className="an-mini-metric-sub">longitud del texto</span>
+                      </div>
+                      <div className="an-mini-metric">
+                        <span className="an-mini-metric-label">Símbolos Únicos</span>
+                        <span className="an-mini-metric-val mono">{statsResult.plaintext.uniqueBytes} / 256</span>
+                        <span className="an-mini-metric-sub">
+                          {Math.round((statsResult.plaintext.uniqueBytes / 256) * 100)}% del espacio
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-                <MetricCard
-                  icon={<Layers size={20} />}
-                  label="Bloques Repetidos"
-                  value={statsResult.duplicatedBlocksCount || 0}
-                  description={
-                    statsResult.duplicatedBlocksCount > 0
-                      ? 'Posible fuga de patrones estructurales'
-                      : 'Ningún bloque duplicado detectado'
-                  }
-                  highlight={statsResult.duplicatedBlocksCount > 0}
-                  badge={
-                    statsResult.duplicatedBlocksCount > 0
-                      ? { text: 'Alerta de Patrón', className: 'badge-rose' }
-                      : { text: 'Uniforme', className: 'badge-green' }
-                  }
+                  {/* Tarjeta Estado Cifrado */}
+                  <div className="an-state-card an-state-card--cipher">
+                    <div className="an-state-header">
+                      <div className="an-state-title-group">
+                        <Shield size={18} style={{ color: '#00d4ff' }} />
+                        <span className="an-state-title">2. Criptograma Cifrado (AES-256-CBC)</span>
+                      </div>
+                      <span className="an-state-badge an-state-badge--cipher">Salida AES</span>
+                    </div>
+
+                    <div className="an-state-metrics-row">
+                      <div className="an-mini-metric">
+                        <span className="an-mini-metric-label">Entropía Shannon</span>
+                        <span className="an-mini-metric-val mono" style={{ color: '#00d4ff' }}>
+                          {statsResult.entropy.toFixed(4)}
+                        </span>
+                        <span className="an-mini-metric-sub">bits / byte (máx 8.0)</span>
+                      </div>
+                      <div className="an-mini-metric">
+                        <span className="an-mini-metric-label">Bytes Cifrados</span>
+                        <span className="an-mini-metric-val mono">{statsResult.totalBytes}</span>
+                        <span className="an-mini-metric-sub">bloques con padding</span>
+                      </div>
+                      <div className="an-mini-metric">
+                        <span className="an-mini-metric-label">Bytes Únicos</span>
+                        <span className="an-mini-metric-val mono">{statsResult.uniqueBytes} / 256</span>
+                        <span className="an-mini-metric-sub">
+                          {Math.round((statsResult.uniqueBytes / 256) * 100)}% del espacio
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Modo Base64 Aislado (sin texto en claro disponible) */
+                <div className="an-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', width: '100%' }}>
+                  <MetricCard
+                    icon={<Zap size={20} className="text-accent" />}
+                    label="Entropía de Shannon"
+                    value={`${statsResult.entropy.toFixed(4)}`}
+                    description="Bits de incertidumbre por byte (Máximo ideal: 8.0)"
+                    highlight={statsResult.entropy >= 7.0}
+                    badge={{
+                      text: statsResult.entropy >= 7.0 ? 'Alta Aleatoriedad' : 'Baja Dispersión',
+                      className: statsResult.entropy >= 7.0 ? 'badge-accent' : 'badge-amber',
+                    }}
+                  />
+                  <MetricCard
+                    icon={<FileText size={20} />}
+                    label="Total de Bytes"
+                    value={statsResult.totalBytes}
+                    description="Longitud evaluada del criptograma binario"
+                  />
+                  <MetricCard
+                    icon={<Binary size={20} />}
+                    label="Bytes Únicos Presentes"
+                    value={`${statsResult.uniqueBytes} / 256`}
+                    description={`Cobertura de símbolos: ${Math.round((statsResult.uniqueBytes / 256) * 100)}%`}
+                  />
+                  <MetricCard
+                    icon={<Layers size={20} />}
+                    label="Bloques Repetidos"
+                    value={statsResult.duplicatedBlocksCount || 0}
+                    description={
+                      statsResult.duplicatedBlocksCount > 0
+                        ? 'Posible fuga de patrones estructurales'
+                        : 'Ningún bloque duplicado detectado'
+                    }
+                    highlight={statsResult.duplicatedBlocksCount > 0}
+                    badge={
+                      statsResult.duplicatedBlocksCount > 0
+                        ? { text: 'Alerta de Patrón', className: 'badge-rose' }
+                        : { text: 'Uniforme', className: 'badge-green' }
+                    }
+                  />
+                </div>
+              )}
+
+              {/* 2. INDICADOR COMPARATIVO DE ENTROPÍA (DUAL GAUGE) */}
+              {statsResult.plaintext ? (
+                <DualEntropyGauge
+                  plainEntropy={statsResult.plaintext.entropy}
+                  cipherEntropy={statsResult.entropy}
                 />
+              ) : (
+                <EntropyGauge entropy={statsResult.entropy} />
+              )}
+
+              {/* 3. HISTOGRAMAS DE FRECUENCIA CON VISTAS COMPARATIVAS */}
+              <div className="card" style={{ width: '100%', minWidth: 0, overflow: 'hidden' }}>
+                <div className="cr-card-header">
+                  <div className="cr-card-title-group">
+                    <BarChart2 size={18} className="text-accent" />
+                    <div>
+                      <h4 className="cr-card-title">Distribución y Frecuencia de Aparición de Bytes</h4>
+                      <span className="cr-card-sub">
+                        Compara cómo los picos característicos del mensaje en claro se aplanan en una distribución homogénea tras el cifrado.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Controles de Vista y Filtro */}
+                <div className="an-hist-controls-bar">
+                  {statsResult.plaintext && (
+                    <div className="an-view-tabs">
+                      <button
+                        type="button"
+                        className={`an-view-tab-btn ${statsChartTab === 'compare' ? 'an-view-tab-btn--active' : ''}`}
+                        onClick={() => setStatsChartTab('compare')}
+                      >
+                        <GitCompare size={14} /> Frente a Frente
+                      </button>
+                      <button
+                        type="button"
+                        className={`an-view-tab-btn ${statsChartTab === 'plain' ? 'an-view-tab-btn--active' : ''}`}
+                        onClick={() => setStatsChartTab('plain')}
+                      >
+                        <FileText size={14} /> Solo Texto Original
+                      </button>
+                      <button
+                        type="button"
+                        className={`an-view-tab-btn ${statsChartTab === 'cipher' ? 'an-view-tab-btn--active' : ''}`}
+                        onClick={() => setStatsChartTab('cipher')}
+                      >
+                        <Shield size={14} /> Solo Cifrado
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="an-filter-switch">
+                    <span className="cr-switch-label">Filtrar:</span>
+                    <div className="cr-switch-btn-group">
+                      <button
+                        type="button"
+                        className={`cr-switch-btn ${statsFilterMode === 'active' ? 'cr-switch-btn--active' : ''}`}
+                        onClick={() => setStatsFilterMode('active')}
+                        title="Muestra únicamente los bytes presentes con barras legibles y espaciadas"
+                      >
+                        Solo Bytes Activos
+                      </button>
+                      <button
+                        type="button"
+                        className={`cr-switch-btn ${statsFilterMode === 'all' ? 'cr-switch-btn--active' : ''}`}
+                        onClick={() => setStatsFilterMode('all')}
+                        title="Muestra el rango completo de 256 bytes (0x00 a 0xFF)"
+                      >
+                        Espectro Completo (0 a 255)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tiras de Top 5 Bytes Frecuentes */}
+                {statsResult.plaintext && (
+                  <div style={{ display: 'grid', gridTemplateColumns: statsChartTab === 'compare' ? '1fr 1fr' : '1fr', gap: '12px', marginBottom: '14px' }}>
+                    {(statsChartTab === 'compare' || statsChartTab === 'plain') && (
+                      <div className="an-top-bytes-strip">
+                        <span className="an-top-bytes-label" style={{ color: '#c084fc' }}>
+                          Top Caracteres en Claro:
+                        </span>
+                        {topPlainChips.map((c) => (
+                          <div key={`plain-chip-${c.byteValue}`} className="an-top-byte-chip an-top-byte-chip--plain">
+                            <span className="an-top-byte-char">{c.fullLabel}</span>
+                            <span className="an-top-byte-count">
+                              {c.count} ({c.percentage}%)
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {(statsChartTab === 'compare' || statsChartTab === 'cipher') && (
+                      <div className="an-top-bytes-strip">
+                        <span className="an-top-bytes-label" style={{ color: '#00d4ff' }}>
+                          Top Bytes Cifrados:
+                        </span>
+                        {topCipherChips.map((c) => (
+                          <div key={`cipher-chip-${c.byteValue}`} className="an-top-byte-chip an-top-byte-chip--cipher">
+                            <span className="an-top-byte-char">{c.hex}</span>
+                            <span className="an-top-byte-count">
+                              {c.count} ({c.percentage}%)
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* VISTA 1: COMPARATIVA FRENTE A FRENTE (DUAL CARDS) */}
+                {statsResult.plaintext && statsChartTab === 'compare' && (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px', width: '100%' }}>
+                    {/* Gráfica Original */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#c084fc' }}>
+                          Histograma Original (Sesgo Lingüístico)
+                        </span>
+                        <span style={{ fontSize: '0.74rem', color: 'var(--txt-muted)' }}>
+                          {plainChartDataActive.length} símbolos presentes
+                        </span>
+                      </div>
+                      <div style={{ width: '100%', height: 240, minWidth: 0 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={statsFilterMode === 'active' ? plainChartDataActive : plainChartDataFull}
+                            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                            <XAxis
+                              dataKey="label"
+                              tick={{ fill: 'var(--txt-muted)', fontSize: 10 }}
+                              interval={statsFilterMode === 'active' ? 0 : 31}
+                            />
+                            <YAxis tick={{ fill: 'var(--txt-muted)', fontSize: 10 }} />
+                            <Tooltip content={<ByteFrequencyTooltip />} />
+                            <Bar dataKey="count" fill="#a855f7" radius={[2, 2, 0, 0]}>
+                              {(statsFilterMode === 'active' ? plainChartDataActive : plainChartDataFull).map((entry) => (
+                                <Cell
+                                  key={`plain-cell-${entry.byteValue}`}
+                                  fill={entry.count > 0 ? '#a855f7' : 'rgba(255,255,255,0.04)'}
+                                />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+
+                    {/* Gráfica Cifrada */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#00d4ff' }}>
+                          Histograma Cifrado (Dispersión Homogénea AES)
+                        </span>
+                        <span style={{ fontSize: '0.74rem', color: 'var(--txt-muted)' }}>
+                          {cipherChartDataActive.length} bytes presentes
+                        </span>
+                      </div>
+                      <div style={{ width: '100%', height: 240, minWidth: 0 }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={statsFilterMode === 'active' ? cipherChartDataActive : cipherChartDataFull}
+                            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                            <XAxis
+                              dataKey="label"
+                              tick={{ fill: 'var(--txt-muted)', fontSize: 10 }}
+                              interval={statsFilterMode === 'active' ? (cipherChartDataActive.length > 20 ? 1 : 0) : 31}
+                            />
+                            <YAxis tick={{ fill: 'var(--txt-muted)', fontSize: 10 }} />
+                            <Tooltip content={<ByteFrequencyTooltip />} />
+                            <Bar dataKey="count" fill="var(--clr-accent)" radius={[2, 2, 0, 0]}>
+                              {(statsFilterMode === 'active' ? cipherChartDataActive : cipherChartDataFull).map((entry) => (
+                                <Cell
+                                  key={`cipher-cell-${entry.byteValue}`}
+                                  fill={entry.count > 0 ? 'var(--clr-accent)' : 'rgba(255,255,255,0.04)'}
+                                />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* VISTA 2: SOLO TEXTO ORIGINAL (ANCHO COMPLETO) */}
+                {statsChartTab === 'plain' && statsResult.plaintext && (
+                  <div style={{ width: '100%', height: 280, minWidth: 0 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={statsFilterMode === 'active' ? plainChartDataActive : plainChartDataFull}
+                        margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                        <XAxis
+                          dataKey="label"
+                          tick={{ fill: 'var(--txt-muted)', fontSize: 11 }}
+                          interval={statsFilterMode === 'active' ? 0 : 31}
+                        />
+                        <YAxis tick={{ fill: 'var(--txt-muted)', fontSize: 10 }} />
+                        <Tooltip content={<ByteFrequencyTooltip />} />
+                        <Bar dataKey="count" fill="#a855f7" radius={[2, 2, 0, 0]}>
+                          {(statsFilterMode === 'active' ? plainChartDataActive : plainChartDataFull).map((entry) => (
+                            <Cell
+                              key={`p-full-cell-${entry.byteValue}`}
+                              fill={entry.count > 0 ? '#a855f7' : 'rgba(255,255,255,0.04)'}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
+                {/* VISTA 3: SOLO CIFRADO (ANCHO COMPLETO) O MODO BASE64 */}
+                {(statsChartTab === 'cipher' || !statsResult.plaintext) && (
+                  <div style={{ width: '100%', height: 280, minWidth: 0 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={statsFilterMode === 'active' ? cipherChartDataActive : cipherChartDataFull}
+                        margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                        <XAxis
+                          dataKey="label"
+                          tick={{ fill: 'var(--txt-muted)', fontSize: 10 }}
+                          interval={statsFilterMode === 'active' ? (cipherChartDataActive.length > 25 ? 1 : 0) : 31}
+                        />
+                        <YAxis tick={{ fill: 'var(--txt-muted)', fontSize: 10 }} />
+                        <Tooltip content={<ByteFrequencyTooltip />} />
+                        <Bar dataKey="count" fill="var(--clr-accent)" radius={[2, 2, 0, 0]}>
+                          {(statsFilterMode === 'active' ? cipherChartDataActive : cipherChartDataFull).map((entry) => (
+                            <Cell
+                              key={`c-full-cell-${entry.byteValue}`}
+                              fill={entry.count > 0 ? 'var(--clr-accent)' : 'rgba(255,255,255,0.04)'}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
               </div>
 
-              {/* Indicador Gráfico de Entropía */}
-              <EntropyGauge entropy={statsResult.entropy} />
-
-              {/* Criptograma Resultante (si proviene de texto) */}
+              {/* 4. CRIPTOGRAMA EVALUADO (BASE64) */}
               {statsResult.encryptedText && (
                 <div className="card an-encrypted-card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -834,56 +2019,66 @@ function AnalysisContent() {
                 </div>
               )}
 
-              {/* Gráfica de Distribución de Frecuencias de Bytes */}
-              <div className="card" style={{ width: '100%', minWidth: 0, overflow: 'hidden' }}>
-                <div className="cr-card-header">
-                  <div className="cr-card-title-group">
-                    <BarChart2 size={18} className="text-accent" />
-                    <div>
-                      <h4 className="cr-card-title">Distribución de Frecuencias por Byte (0x00 - 0xFF)</h4>
-                      <span className="cr-card-sub">Conteo cuantitativo de apariciones para cada uno de los 256 valores de byte posibles.</span>
+              {/* 5. INTERPRETACIÓN DINÁMICA DE RESULTADOS (3 PREGUNTAS CLAVE) */}
+              <div className="an-interp-container">
+                <div className="an-interp-header">
+                  <HelpCircle size={20} className="text-accent" />
+                  <span className="an-interp-title">Interpretación Pedagógica del Análisis Estadístico</span>
+                </div>
+
+                <div className="an-interp-grid">
+                  {/* Pregunta 1 */}
+                  <div className="an-interp-card">
+                    <div className="an-interp-card-q">
+                      <Eye size={16} /> 1. ¿Qué estás viendo?
+                    </div>
+                    <div className="an-interp-card-ans">
+                      {dynamicInterp
+                        ? dynamicInterp.whatSeeing
+                        : `El criptograma analizado de ${statsResult.totalBytes} bytes exhibe una entropía de ${statsResult.entropy.toFixed(4)} bits/byte distribuida en ${statsResult.uniqueBytes} valores de byte únicos.`}
+                    </div>
+                  </div>
+
+                  {/* Pregunta 2 */}
+                  <div className="an-interp-card">
+                    <div className="an-interp-card-q">
+                      <Zap size={16} /> 2. ¿Por qué ocurre?
+                    </div>
+                    <div className="an-interp-card-ans">
+                      {dynamicInterp
+                        ? dynamicInterp.whyOccurs
+                        : 'El algoritmo AES utiliza operaciones iterativas de sustitución (Cajas-S) y mezcla lineal (MixColumns) para disolver cualquier correlación entre las entradas y las salidas, aplanando las frecuencias estadísticas.'}
+                    </div>
+                  </div>
+
+                  {/* Pregunta 3 */}
+                  <div className="an-interp-card">
+                    <div className="an-interp-card-q">
+                      <ShieldCheck size={16} /> 3. ¿Qué debes tener en cuenta?
+                    </div>
+                    <div className="an-interp-card-ans">
+                      <ul>
+                        <li>Una distribución plana de frecuencias dificulta los ataques clásicos por análisis de frecuencias (como los usados contra César o Vigenère).</li>
+                        <li>Las métricas estadísticas no miden la fortaleza de la clave elegida ni previenen ataques de fuerza bruta si la contraseña es débil.</li>
+                      </ul>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ width: '100%', height: 260, minWidth: 0, overflow: 'hidden' }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={frequencyChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                      <XAxis dataKey="byteValue" tick={{ fill: 'var(--txt-muted)', fontSize: 10 }} interval={31} />
-                      <YAxis tick={{ fill: 'var(--txt-muted)', fontSize: 10 }} />
-                      <Tooltip content={<ByteFrequencyTooltip />} />
-                      <Bar dataKey="count" fill="var(--clr-accent)" radius={[2, 2, 0, 0]}>
-                        {frequencyChartData.map((entry) => (
-                          <Cell
-                            key={`cell-${entry.byteValue}`}
-                            fill={entry.count > 0 ? 'var(--clr-accent)' : 'rgba(255,255,255,0.05)'}
-                          />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                {/* 6. AVISO DE SEGURIDAD OBLIGATORIO DESTACADO */}
+                <div className="an-security-disclaimer">
+                  <AlertTriangle size={20} style={{ color: '#f59e0b', flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <strong>Aclaración Criptográfica Esencial:</strong>
+                    <p style={{ margin: '4px 0 0 0' }}>
+                      &laquo;Una entropía alta indica una distribución más uniforme de los datos, pero no garantiza por sí sola que un cifrado sea seguro.&raquo;
+                      <br />
+                      Archivos comprimidos (como ZIP o JPEG) o algoritmos rotos también pueden exhibir alta entropía superficial sin ofrecer verdadera protección confidencial.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Cuadro Pedagógico y Riguroso de Interpretación */}
-              <div className="cr-edu-note hex-bg">
-                <HelpCircle size={22} style={{ flexShrink: 0, color: 'var(--clr-accent)' }} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <strong style={{ fontSize: '0.95rem' }}>Interpretación Rigurosa del Análisis Estadístico:</strong>
-                  <ul style={{ paddingLeft: '18px', margin: 0, fontSize: '0.86rem', lineHeight: '1.5' }}>
-                    <li>
-                      <strong>¿Qué representa esta métrica?</strong> La entropía mide la dispersión probabilística de bits en cada byte. Un valor de 8.0 representa una distribución perfectamente aleatoria y uniforme.
-                    </li>
-                    <li>
-                      <strong>¿Qué patrón se observa?</strong> En un cifrado robusto, la gráfica de frecuencias es cuasi-uniforme (sin picos desproporcionados ni letras recurrentes legibles).
-                    </li>
-                    <li>
-                      <strong>¿Qué NO se puede concluir?</strong> <em>Una alta entropía no demuestra por sí sola que un cifrado sea seguro.</em> Datos comprimidos (ZIP/JPEG) o generadores lineales débiles también exhiben alta entropía superficial. La seguridad depende de la resistencia matemática frente a criptoanálisis de clave, no únicamente de métricas de dispersión.
-                    </li>
-                  </ul>
-                </div>
-              </div>
             </div>
           )}
         </section>
@@ -894,11 +2089,74 @@ function AnalysisContent() {
          ═══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'avalanche' && (
         <section className="an-avalanche-section animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0, width: '100%' }}>
+          {/* 1. INTRODUCCIÓN DIDÁCTICA AL EFECTO AVALANCHA */}
+          <div className="card" style={{ padding: '22px 24px', background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <Zap size={20} style={{ color: '#00d4ff' }} />
+              <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#fff' }}>
+                ¿Qué es el Efecto Avalancha y por qué el 50% es el objetivo ideal?
+              </h3>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', fontSize: '0.86rem', color: 'var(--txt-secondary)', lineHeight: '1.55' }}>
+              <div style={{ padding: '12px 14px', background: 'rgba(0,0,0,0.25)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <strong style={{ color: 'var(--clr-accent)', display: 'block', marginBottom: '4px' }}>
+                  1. El Bit como Interruptor
+                </strong>
+                En computación digital, un bit es la unidad mínima de información. Solo puede estar en dos estados: <code>0</code> (apagado) o <code>1</code> (encendido). Cada carácter de texto se compone de 8 de estos bits.
+              </div>
+              <div style={{ padding: '12px 14px', background: 'rgba(0,0,0,0.25)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <strong style={{ color: '#c084fc', display: 'block', marginBottom: '4px' }}>
+                  2. La Avalancha (Difusión)
+                </strong>
+                El Criterio Estricto de Avalancha (SAC) establece que si alteras un <strong>único bit</strong> en el mensaje o en la clave, aproximadamente la mitad de los bits del texto cifrado deben cambiar en cascada.
+              </div>
+              <div style={{ padding: '12px 14px', background: 'rgba(0,0,0,0.25)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <strong style={{ color: '#10d46e', display: 'block', marginBottom: '4px' }}>
+                  3. ¿Por qué 50% y no 100%?
+                </strong>
+                Equivale a lanzar una moneda al aire por cada bit. Si cambiara siempre el 100% o el 0%, habría un patrón predecible invertible. El 50% garantiza que no existe ninguna correlación explotable para un atacante.
+              </div>
+            </div>
+          </div>
+
+          {/* 2. BARRA DE PRESETS PEDAGÓGICOS DEL SAC */}
+          <div className="cr-presets-bar">
+            <span className="cr-preset-tag">
+              <Sparkles size={13} style={{ display: 'inline', verticalAlign: '-1px' }} /> Casos de prueba guiados:
+            </span>
+            {SAC_PRESETS.map((p) => {
+              const isActive = avActivePreset === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`cr-preset-btn ${isActive ? 'cr-preset-btn--active' : ''}`}
+                  onClick={() => handleSelectSacPreset(p)}
+                  title={p.subtitle}
+                >
+                  <span style={{ fontWeight: 700 }}>{p.title}</span>
+                  <span className="badge badge-accent mono" style={{ fontSize: '0.66rem' }}>
+                    {p.badge}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Banner Explicativo del Preset Activo */}
+          {avActivePreset && (
+            <div className="an-preset-explanation animate-fade-in">
+              <strong>Objetivo del Caso:</strong>{' '}
+              {SAC_PRESETS.find((p) => p.id === avActivePreset)?.explanation}
+            </div>
+          )}
+
+          {/* 3. TARJETA DE ENTRADA Y CONTROLES */}
           <div className="card an-input-card">
             <div className="an-card-title">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Zap size={18} style={{ color: '#00d4ff' }} />
-                <span>Criterio Estricto de Avalancha (Strict Avalanche Criterion - SAC)</span>
+                <span>Laboratorio Experimental de Avalancha (SAC)</span>
               </div>
               <div className="cr-switch-btn-group">
                 <button
@@ -927,7 +2185,11 @@ function AnalysisContent() {
                       type="text"
                       className="form-input"
                       value={avText}
-                      onChange={(e) => setAvText(e.target.value)}
+                      onChange={(e) => {
+                        setAvText(e.target.value);
+                        setAvActivePreset(null);
+                      }}
+                      placeholder="Escribe el mensaje a evaluar..."
                     />
                   </div>
                   <div className="form-group">
@@ -936,12 +2198,25 @@ function AnalysisContent() {
                       type="text"
                       className="form-input"
                       value={avKey}
-                      onChange={(e) => setAvKey(e.target.value)}
+                      onChange={(e) => {
+                        setAvKey(e.target.value);
+                        setAvActivePreset(null);
+                      }}
+                      placeholder="Clave de 256 bits..."
                     />
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px' }}>
+                {/* Selector Interactivo de Byte y Bit */}
+                <BitInputInspectCard
+                  text={avText}
+                  byteIndex={avByteIndex}
+                  bitIndex={avBitIndex}
+                  onByteChange={(idx) => setAvByteIndex(idx)}
+                  onBitChange={(b) => setAvBitIndex(b)}
+                />
+
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     className="btn btn-primary"
@@ -949,12 +2224,20 @@ function AnalysisContent() {
                     disabled={avLoading}
                   >
                     {avLoading ? <RefreshCw size={16} className="spinner" /> : <Play size={16} />}
-                    Ejecutar Prueba de Avalancha (1 bit)
+                    Ejecutar Prueba de Avalancha (Invertir Bit {avBitIndex})
                   </button>
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={() => { setAvText('Criptografia Cryptium 2026'); setAvKey('ClaveExperimental2026!'); }}
+                    onClick={() => {
+                      setAvText('Criptografia Cryptium 2026');
+                      setAvKey('ClaveExperimental2026!');
+                      setAvByteIndex(0);
+                      setAvBitIndex(0);
+                      setAvActivePreset(null);
+                      setAvResult(null);
+                      setAvStatus(null);
+                    }}
                   >
                     Restablecer Valores
                   </button>
@@ -990,10 +2273,9 @@ function AnalysisContent() {
                       value={batchSamplesCount}
                       onChange={(e) => setBatchSamplesCount(Number(e.target.value))}
                     >
-                      <option value={5}>5 muestras</option>
+                      <option value={5}>5 muestras (Rápido)</option>
                       <option value={10}>10 muestras (Estándar)</option>
                       <option value={20}>20 muestras (Detallado)</option>
-                      <option value={50}>50 muestras (Extenso)</option>
                     </select>
                   </div>
                 </div>
@@ -1037,52 +2319,121 @@ function AnalysisContent() {
           {avStatus && avMode === 'single' && <StatusAlert status={avStatus} />}
           {batchStatus && avMode === 'batch' && <StatusAlert status={batchStatus} />}
 
-          {/* Resultados Avalancha Individual */}
+          {/* 4. RESULTADOS: AVALANCHA INDIVIDUAL */}
           {avResult && avMode === 'single' && (
             <div ref={avResultsRef} className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: 0, width: '100%' }}>
+              {/* Velocímetro Semicircular de Avalancha */}
               <AvalancheGauge
                 percentage={avResult.avalanchePercentage}
                 differentBits={avResult.differentBits}
                 totalBits={avResult.totalBits}
               />
 
-              {/* Comparación Visual del Bit Modificado */}
+              {/* Matriz Matricial Visual de Bits (C vs C') */}
+              <BitMatrixVisualizer
+                originalBase64={avResult.originalCiphertextBase64}
+                modifiedBase64={avResult.modifiedCiphertextBase64}
+                differentBits={avResult.differentBits}
+                totalBits={avResult.totalBits}
+                percentage={avResult.avalanchePercentage}
+              />
+
+              {/* Comparación Visual del Bit Modificado e Inspección Criptográfica */}
               <div className="card">
                 <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <GitCompare size={16} className="text-accent" />
-                  Inspección del Bit Invertido (Entrada P vs P')
+                  Inspección Criptográfica de Salida (C vs C')
                 </h4>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <div style={{ padding: '12px', background: 'rgba(0,0,0,0.3)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <span style={{ fontSize: '0.74rem', color: 'var(--txt-muted)', textTransform: 'uppercase' }}>Byte Original</span>
-                    <div className="mono" style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--clr-accent)', marginTop: '4px' }}>
-                      0x{avResult.originalByteHex}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                  {/* Criptograma Original */}
+                  <div style={{ padding: '14px', background: 'rgba(0,0,0,0.3)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--txt-muted)', textTransform: 'uppercase' }}>
+                        Criptograma Original (C)
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-ghost"
+                        style={{ padding: '2px 8px', fontSize: '0.72rem' }}
+                        onClick={() => handleCopyCiphertext(avResult.originalCiphertextBase64, 'orig')}
+                      >
+                        {avCopiedOrig ? <Check size={12} style={{ color: '#10d46e' }} /> : <Copy size={12} />}
+                        {avCopiedOrig ? 'Copiado' : 'Copiar'}
+                      </button>
                     </div>
-                    <div className="mono" style={{ fontSize: '0.85rem', color: 'var(--txt-secondary)', letterSpacing: '0.1em', marginTop: '2px' }}>
-                      {avResult.originalByteBinary}
+                    <div className="mono" style={{ fontSize: '0.78rem', wordBreak: 'break-all', color: 'var(--clr-accent)', lineHeight: '1.4' }}>
+                      {avResult.originalCiphertextBase64 || 'N/A'}
                     </div>
                   </div>
 
-                  <div style={{ padding: '12px', background: 'rgba(244,63,94,0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(244,63,94,0.3)' }}>
-                    <span style={{ fontSize: '0.74rem', color: '#f43f5e', textTransform: 'uppercase' }}>Byte Alterado (1 Bit Invertido)</span>
-                    <div className="mono" style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f43f5e', marginTop: '4px' }}>
-                      0x{avResult.modifiedByteHex}
+                  {/* Criptograma Modificado */}
+                  <div style={{ padding: '14px', background: 'rgba(244,63,94,0.06)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(244,63,94,0.3)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '0.74rem', color: '#f43f5e', textTransform: 'uppercase' }}>
+                        Criptograma Modificado (C')
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-ghost"
+                        style={{ padding: '2px 8px', fontSize: '0.72rem' }}
+                        onClick={() => handleCopyCiphertext(avResult.modifiedCiphertextBase64, 'mod')}
+                      >
+                        {avCopiedMod ? <Check size={12} style={{ color: '#10d46e' }} /> : <Copy size={12} />}
+                        {avCopiedMod ? 'Copiado' : 'Copiar'}
+                      </button>
                     </div>
-                    <div className="mono" style={{ fontSize: '0.85rem', color: 'var(--txt-primary)', letterSpacing: '0.1em', marginTop: '2px' }}>
-                      {avResult.modifiedByteBinary}
+                    <div className="mono" style={{ fontSize: '0.78rem', wordBreak: 'break-all', color: '#f43f5e', lineHeight: '1.4' }}>
+                      {avResult.modifiedCiphertextBase64 || 'N/A'}
                     </div>
                   </div>
                 </div>
 
                 <div style={{ marginTop: '12px', fontSize: '0.8rem', color: 'var(--txt-muted)' }}>
-                  Detalle: {avResult.flippedBitInfo} · Mismo IV utilizado en ambos cifrados: <code className="mono">0x{avResult.ivHex}</code>
+                  Detalle del bit invertido: <strong>{avResult.flippedBitInfo}</strong> · Mismo Vector de Inicialización (IV) de 128 bits utilizado en ambas pruebas:{' '}
+                  <code className="mono">0x{avResult.ivHex}</code>
+                </div>
+              </div>
+
+              {/* Interpretación Dinámica en 3 Preguntas para Avalancha */}
+              <div className="an-interp-grid">
+                {/* Pregunta 1 */}
+                <div className="an-interp-card">
+                  <div className="an-interp-card-q">
+                    <Eye size={16} /> 1. ¿Qué estás viendo?
+                  </div>
+                  <div className="an-interp-card-ans">
+                    Se evaluaron <strong>{avResult.totalBits} bits</strong> en total. Al alterar exactamente <strong>1 bit</strong> en la entrada ({avResult.flippedBitInfo}), cambiaron <strong>{avResult.differentBits} bits</strong> en el criptograma, logrando una difusión del <strong>{avResult.avalanchePercentage.toFixed(2)}%</strong> (con una diferencia de apenas Δ {Math.abs(avResult.avalanchePercentage - 50).toFixed(2)}% respecto al 50% ideal).
+                  </div>
+                </div>
+
+                {/* Pregunta 2 */}
+                <div className="an-interp-card">
+                  <div className="an-interp-card-q">
+                    <Zap size={16} /> 2. ¿Por qué ocurre?
+                  </div>
+                  <div className="an-interp-card-ans">
+                    El diseño por capas de AES (Sustitución mediante Cajas-S, Permutación ShiftRows y Mezcla Lineal MixColumns) actúa como un multiplicador de cascada. En cada ronda de cifrado, la alteración de 1 bit contamina todos los bytes de la columna, dispersándose exponencialmente por toda la matriz de 128 bits.
+                  </div>
+                </div>
+
+                {/* Pregunta 3 */}
+                <div className="an-interp-card">
+                  <div className="an-interp-card-q">
+                    <ShieldCheck size={16} /> 3. ¿Qué debes tener en cuenta?
+                  </div>
+                  <div className="an-interp-card-ans">
+                    <ul>
+                      <li>Si el efecto avalancha fuera muy bajo (por ejemplo &lt; 20%), un atacante podría deducir la clave probando bits uno a uno mediante criptoanálisis diferencial.</li>
+                      <li>Una difusión cercana al 50% garantiza que la salida se comporta como un generador de ruido seudoaleatorio perfecto sin correlación detectable.</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Resultados Avalancha por Lotes (Multimuestra) */}
+          {/* 5. RESULTADOS: AVALANCHA POR LOTES (MULTIMUESTRA) */}
           {batchResult && avMode === 'batch' && (
             <div ref={batchResultsRef} className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: 0, width: '100%' }}>
               {/* Tarjetas Resumen */}
@@ -1147,6 +2498,11 @@ function AnalysisContent() {
                 </div>
               </div>
 
+              {/* Explicación didáctica de por qué se evalúa por lotes */}
+              <div className="an-preset-explanation">
+                <strong>¿Por qué evaluar múltiples muestras y medir la desviación estándar (σ)?</strong> Una sola prueba puede arrojar 47% o 54% debido a pequeñas fluctuaciones probabilísticas normales. Sin embargo, evaluar múltiples bits distintos permite comprobar que la media de difusión converge de forma consistente hacia el 50% con una dispersión reducida (σ &lt; 5%), descartando sesgos ocultos.
+              </div>
+
               {/* Tabla Detallada de Muestras */}
               <div className="cr-table-wrapper" style={{ width: '100%', overflowX: 'auto' }}>
                 <table className="cr-table">
@@ -1203,6 +2559,69 @@ function AnalysisContent() {
          ═══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'blocks' && (
         <section className="an-blocks-section animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0, width: '100%' }}>
+          {/* 1. INTRODUCCIÓN DIDÁCTICA A LOS MODOS DE BLOQUE */}
+          <div className="card" style={{ padding: '22px 24px', background: 'var(--clr-surface)', border: '1px solid var(--clr-border)', borderRadius: 'var(--radius-lg)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+              <Layers size={20} className="text-accent" />
+              <h3 style={{ margin: 0, fontSize: '1.08rem', fontWeight: 800, color: '#fff' }}>
+                ¿Cómo procesa AES los datos en bloques y qué peligro tiene el modo ECB?
+              </h3>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', fontSize: '0.86rem', color: 'var(--txt-secondary)', lineHeight: '1.55' }}>
+              <div style={{ padding: '12px 14px', background: 'rgba(0,0,0,0.25)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <strong style={{ color: 'var(--clr-accent)', display: 'block', marginBottom: '4px' }}>
+                  1. Bloques Fijos de 16 Bytes
+                </strong>
+                AES divide los mensajes en paquetes cerrados de exactamente 16 bytes (128 bits). Si un mensaje no es múltiplo de 16, se le añade un relleno normalizado (PKCS7).
+              </div>
+              <div style={{ padding: '12px 14px', background: 'rgba(244,63,94,0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(244,63,94,0.3)' }}>
+                <strong style={{ color: '#f43f5e', display: 'block', marginBottom: '4px' }}>
+                  2. Modo ECB (Sin Memoria)
+                </strong>
+                Cifra cada bloque por separado. Si dos bloques tienen exactamente el mismo texto, sus salidas cifradas serán <strong>100% idénticas</strong>, revelando la estructura interna (como la silueta del pingüino Tux).
+              </div>
+              <div style={{ padding: '12px 14px', background: 'rgba(16,212,110,0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(16,212,110,0.3)' }}>
+                <strong style={{ color: '#10d46e', display: 'block', marginBottom: '4px' }}>
+                  3. Modo CBC (Con Encadenamiento)
+                </strong>
+                Combina cada bloque con el resultado del anterior mediante XOR y utiliza un Vector de Inicialización (IV) impredecible. Aunque haya bloques repetidos, cada criptograma es completamente único.
+              </div>
+            </div>
+          </div>
+
+          {/* 2. BARRA DE PRESETS PEDAGÓGICOS DE MODOS DE BLOQUE */}
+          <div className="cr-presets-bar">
+            <span className="cr-preset-tag">
+              <Sparkles size={13} style={{ display: 'inline', verticalAlign: '-1px' }} /> Patrones de prueba estructurados:
+            </span>
+            {BLOCK_PRESETS.map((p) => {
+              const isActive = blocksActivePreset === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`cr-preset-btn ${isActive ? 'cr-preset-btn--active' : ''}`}
+                  onClick={() => handleSelectBlocksPreset(p)}
+                  title={p.subtitle}
+                >
+                  <span style={{ fontWeight: 700 }}>{p.title}</span>
+                  <span className="badge badge-accent mono" style={{ fontSize: '0.66rem' }}>
+                    {p.badge}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Banner Explicativo del Preset Activo */}
+          {blocksActivePreset && (
+            <div className="an-preset-explanation animate-fade-in">
+              <strong>Objetivo del Caso:</strong>{' '}
+              {BLOCK_PRESETS.find((p) => p.id === blocksActivePreset)?.explanation}
+            </div>
+          )}
+
+          {/* 3. ENTRADA Y CONTROLES */}
           <div className="card an-input-card">
             <div className="an-card-title">
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1212,24 +2631,6 @@ function AnalysisContent() {
               <span className="badge badge-rose">Demostración Experimental</span>
             </div>
 
-            <div className="cr-presets-bar">
-              <span className="cr-preset-tag">Patrones de prueba rápidos:</span>
-              <button
-                type="button"
-                className="cr-preset-btn"
-                onClick={() => setBlocksText('CRYPTIUM_BLOCK_1CRYPTIUM_BLOCK_1CRYPTIUM_BLOCK_1BLOQUE_DISTINTO')}
-              >
-                Bloques Idénticos Repetidos
-              </button>
-              <button
-                type="button"
-                className="cr-preset-btn"
-                onClick={() => setBlocksText('111111111111111111111111111111112222222222222222')}
-              >
-                Patrón Numérico Repetitivo
-              </button>
-            </div>
-
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div className="form-group">
                 <label className="form-label">Texto estructurado de prueba (Múltiplos de 16 bytes):</label>
@@ -1237,7 +2638,11 @@ function AnalysisContent() {
                   type="text"
                   className="form-input"
                   value={blocksText}
-                  onChange={(e) => setBlocksText(e.target.value)}
+                  onChange={(e) => {
+                    setBlocksText(e.target.value);
+                    setBlocksActivePreset(null);
+                  }}
+                  placeholder="Texto repetitivo o estructurado..."
                 />
               </div>
               <div className="form-group">
@@ -1246,7 +2651,11 @@ function AnalysisContent() {
                   type="text"
                   className="form-input"
                   value={blocksKey}
-                  onChange={(e) => setBlocksKey(e.target.value)}
+                  onChange={(e) => {
+                    setBlocksKey(e.target.value);
+                    setBlocksActivePreset(null);
+                  }}
+                  placeholder="Clave para ambos modos..."
                 />
               </div>
             </div>
@@ -1266,107 +2675,181 @@ function AnalysisContent() {
 
           {blocksStatus && <StatusAlert status={blocksStatus} />}
 
-          {/* Resultados de Modos de Bloque */}
+          {/* 4. RESULTADOS DE MODOS DE BLOQUE */}
           {blocksResult && (
             <div ref={blocksResultsRef} className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: 0, width: '100%' }}>
-              {/* Métricas Resumen */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', width: '100%' }}>
-                <MetricCard
-                  icon={<Layers size={18} />}
-                  label="Bloques Evaluados"
-                  value={blocksResult.totalBlocks}
-                  description="Bloques AES de 128 bits (16 bytes c/u)"
-                />
-                <MetricCard
-                  icon={<FileText size={18} className="text-accent" />}
-                  label="Bloques Repetidos en Claro"
-                  value={blocksResult.duplicatedPlainBlocksCount}
-                  description="Bloques con texto idéntico en la entrada"
-                  highlight={blocksResult.duplicatedPlainBlocksCount > 0}
-                />
-                <MetricCard
-                  icon={<AlertTriangle size={18} style={{ color: '#f43f5e' }} />}
-                  label="Repeticiones en ECB"
-                  value={blocksResult.duplicatedEcbBlocksCount}
-                  description={
-                    blocksResult.duplicatedEcbBlocksCount > 0
-                      ? '¡Fuga de patrones! Bloques idénticos producen criptogramas idénticos'
-                      : 'Sin duplicados detectados'
-                  }
-                  highlight={blocksResult.duplicatedEcbBlocksCount > 0}
-                  badge={
-                    blocksResult.duplicatedEcbBlocksCount > 0
-                      ? { text: 'Inseguro (ECB)', className: 'badge-rose' }
-                      : { text: 'Sin patrones', className: 'badge-muted' }
-                  }
-                />
-                <MetricCard
-                  icon={<ShieldCheck size={18} style={{ color: '#10d46e' }} />}
-                  label="Repeticiones en CBC"
-                  value={blocksResult.duplicatedCbcBlocksCount}
-                  description="Cero repeticiones gracias al encadenamiento con IV"
-                  highlight={blocksResult.duplicatedCbcBlocksCount === 0}
-                  badge={{ text: 'Seguro (CBC)', className: 'badge-green' }}
-                />
-              </div>
+              {/* Diagrama Didáctico Comparativo */}
+              <BlockOperationDiagram />
 
-              {/* Matriz Visual de Bloques */}
+              {/* Métricas Resumen */}
+              {(() => {
+                const plainDupes = blocksResult.plaintextDuplicatesCount ?? blocksResult.duplicatedPlainBlocksCount ?? 0;
+                const ecbDupes = blocksResult.ecbDuplicateBlockCount ?? blocksResult.duplicatedEcbBlocksCount ?? 0;
+                const cbcDupes = blocksResult.cbcDuplicateBlockCount ?? blocksResult.duplicatedCbcBlocksCount ?? 0;
+
+                return (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', width: '100%' }}>
+                    <MetricCard
+                      icon={<Layers size={18} />}
+                      label="Bloques Evaluados"
+                      value={blocksResult.totalBlocks}
+                      description="Bloques AES de 128 bits (16 bytes c/u)"
+                    />
+                    <MetricCard
+                      icon={<FileText size={18} className="text-accent" />}
+                      label="Bloques Repetidos en Claro"
+                      value={plainDupes}
+                      description="Bloques con texto idéntico en la entrada"
+                      highlight={plainDupes > 0}
+                    />
+                    <MetricCard
+                      icon={<AlertTriangle size={18} style={{ color: '#f43f5e' }} />}
+                      label="Repeticiones en ECB"
+                      value={ecbDupes}
+                      description={
+                        ecbDupes > 0
+                          ? '¡Fuga de patrones! Bloques idénticos producen criptogramas idénticos'
+                          : 'Sin duplicados detectados'
+                      }
+                      highlight={ecbDupes > 0}
+                      badge={
+                        ecbDupes > 0
+                          ? { text: 'Inseguro (ECB)', className: 'badge-rose' }
+                          : { text: 'Sin patrones', className: 'badge-muted' }
+                      }
+                    />
+                    <MetricCard
+                      icon={<ShieldCheck size={18} style={{ color: '#10d46e' }} />}
+                      label="Repeticiones en CBC"
+                      value={cbcDupes}
+                      description="Cero repeticiones gracias al encadenamiento con IV"
+                      highlight={cbcDupes === 0}
+                      badge={{ text: 'Seguro (CBC)', className: 'badge-green' }}
+                    />
+                  </div>
+                );
+              })()}
+
+              {/* Matriz Visual Comparativa de Bloques */}
               <div className="card" style={{ width: '100%', minWidth: 0, overflow: 'hidden' }}>
                 <div className="cr-card-header">
                   <div className="cr-card-title-group">
                     <Layers size={18} className="text-accent" />
                     <div>
                       <h4 className="cr-card-title">Matriz Comparativa de Bloques (ECB vs CBC)</h4>
-                      <span className="cr-card-sub">Observa cómo ECB preserva repeticiones mientras CBC las aleatoriza completamente.</span>
+                      <span className="cr-card-sub">
+                        Observa cómo ECB preserva repeticiones mientras CBC las aleatoriza completamente con el IV{' '}
+                        <code className="mono">0x{blocksResult.cbcIvHex}</code>.
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                  <div className="cr-block-matrix" style={{ minWidth: '680px' }}>
-                    {blocksResult.blocks.map((b) => (
-                      <div key={b.index} className="cr-block-row">
-                        <div className="cr-block-idx">
-                          <span>Bloque</span>
-                          <span className="mono" style={{ fontSize: '1rem', color: '#fff' }}>#{b.index}</span>
-                        </div>
+                  <div className="cr-block-matrix" style={{ minWidth: '720px' }}>
+                    {blocksResult.blocks.map((b) => {
+                      const isPlainDupe = b.isPlaintextDuplicate ?? b.isPlainDuplicate;
+                      const isEcbDupe = b.isEcbDuplicate;
+                      const isCbcDupe = b.isCbcDuplicate;
+                      const plainTextContent = b.plaintextAscii || b.plainText || '';
 
-                        <div className={`cr-block-cell ${b.isPlainDuplicate ? 'cr-cell--dupe-plain' : ''}`}>
-                          <span className="cr-cell-label">Texto Plano (16 bytes)</span>
-                          <span className="cr-cell-val mono">"{b.plainText}"</span>
-                          {b.isPlainDuplicate && (
-                            <span className="cr-dupe-tag" style={{ background: 'rgba(0,212,255,0.15)', color: 'var(--clr-accent)' }}>
-                              ★ Bloque de Entrada Repetido
+                      return (
+                        <div key={b.index} className="cr-block-row">
+                          <div className="cr-block-idx">
+                            <span>Bloque</span>
+                            <span className="mono" style={{ fontSize: '1rem', color: '#fff' }}>#{b.index}</span>
+                            {b.plaintextDuplicateGroup && (
+                              <span className={`an-block-group-pill ${isPlainDupe ? 'an-block-group-pill--dupe' : ''}`}>
+                                G{b.plaintextDuplicateGroup}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className={`cr-block-cell ${isPlainDupe ? 'cr-cell--dupe-plain' : ''}`}>
+                            <span className="cr-cell-label">Texto Plano (16 bytes)</span>
+                            <span className="cr-cell-val mono">"{plainTextContent}"</span>
+                            {b.plaintextHex && (
+                              <span className="mono" style={{ fontSize: '0.68rem', color: 'var(--txt-muted)' }}>
+                                Hex: {b.plaintextHex}
+                              </span>
+                            )}
+                            {isPlainDupe && (
+                              <span className="cr-dupe-tag" style={{ background: 'rgba(0,212,255,0.15)', color: 'var(--clr-accent)' }}>
+                                ★ Bloque de Entrada Repetido
+                              </span>
+                            )}
+                          </div>
+
+                          <div className={`cr-block-cell ${isEcbDupe ? 'cr-cell--dupe-ecb' : ''}`}>
+                            <span className="cr-cell-label">Modo ECB (Cifrado Independiente)</span>
+                            <span className="cr-cell-val mono">{b.ecbCipherHex}</span>
+                            {isEcbDupe ? (
+                              <span className="cr-dupe-tag cr-dupe-tag--bad">
+                                ⚠ Criptograma ECB Idéntico (Fuga)
+                              </span>
+                            ) : (
+                              <span className="cr-cell-sub">Único</span>
+                            )}
+                          </div>
+
+                          <div className={`cr-block-cell ${isCbcDupe ? 'cr-cell--dupe-ecb' : 'cr-cell--ok-cbc'}`}>
+                            <span className="cr-cell-label">Modo CBC (Encadenamiento con IV)</span>
+                            <span className="cr-cell-val mono">{b.cbcCipherHex}</span>
+                            <span className="cr-dupe-tag cr-dupe-tag--ok">
+                              ✓ Difusión Completa (Diferente)
                             </span>
-                          )}
+                          </div>
                         </div>
-
-                        <div className={`cr-block-cell ${b.isEcbDuplicate ? 'cr-cell--dupe-ecb' : ''}`}>
-                          <span className="cr-cell-label">Modo ECB (Cifrado Independiente)</span>
-                          <span className="cr-cell-val mono">{b.ecbCipherHex}</span>
-                          {b.isEcbDuplicate ? (
-                            <span className="cr-dupe-tag cr-dupe-tag--bad">
-                              ⚠ Criptograma ECB Idéntico (Fuga)
-                            </span>
-                          ) : (
-                            <span className="cr-cell-sub">Único</span>
-                          )}
-                        </div>
-
-                        <div className={`cr-block-cell ${b.isCbcDuplicate ? 'cr-cell--dupe-ecb' : 'cr-cell--ok-cbc'}`}>
-                          <span className="cr-cell-label">Modo CBC (Encadenamiento con IV)</span>
-                          <span className="cr-cell-val mono">{b.cbcCipherHex}</span>
-                          <span className="cr-dupe-tag cr-dupe-tag--ok">
-                            ✓ Difusión Completa (Diferente)
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
 
-              {/* Advertencia Técnica */}
+              {/* Interpretación Didáctica en 3 Preguntas para Modos de Bloque */}
+              {(() => {
+                const plainDupes = blocksResult.plaintextDuplicatesCount ?? blocksResult.duplicatedPlainBlocksCount ?? 0;
+                const ecbDupes = blocksResult.ecbDuplicateBlockCount ?? blocksResult.duplicatedEcbBlocksCount ?? 0;
+
+                return (
+                  <div className="an-interp-grid">
+                    {/* Pregunta 1 */}
+                    <div className="an-interp-card">
+                      <div className="an-interp-card-q">
+                        <Eye size={16} /> 1. ¿Qué estás viendo?
+                      </div>
+                      <div className="an-interp-card-ans">
+                        De los <strong>{blocksResult.totalBlocks} bloques</strong> analizados, se encontraron <strong>{plainDupes} bloques repetidos</strong> en el texto original. En modo ECB, se generaron <strong>{ecbDupes} bloques cifrados idénticos</strong>, replicando la estructura del mensaje. En cambio, en modo CBC se obtuvieron <strong>0 repeticiones</strong>.
+                      </div>
+                    </div>
+
+                    {/* Pregunta 2 */}
+                    <div className="an-interp-card">
+                      <div className="an-interp-card-q">
+                        <Zap size={16} /> 2. ¿Por qué ocurre?
+                      </div>
+                      <div className="an-interp-card-ans">
+                        El modo ECB es estrictamente determinista: <code>Cᵢ = AES(Pᵢ)</code>. Sin vector de inicialización ni memoria, el mismo bloque en claro siempre produce el mismo bloque cifrado. En modo CBC, cada bloque se combina mediante XOR con el bloque cifrado anterior (<code>Cᵢ = AES(Pᵢ ⊕ Cᵢ₋₁)</code>), lo que propaga una mutación continua que rompe cualquier repetición.
+                      </div>
+                    </div>
+
+                    {/* Pregunta 3 */}
+                    <div className="an-interp-card">
+                      <div className="an-interp-card-q">
+                        <ShieldCheck size={16} /> 3. ¿Qué debes tener en cuenta?
+                      </div>
+                      <div className="an-interp-card-ans">
+                        <ul>
+                          <li>El modo ECB está prohibido en criptografía aplicada moderna porque filtra patrones y permite ataques de reemplazo o reordenamiento de bloques.</li>
+                          <li>El modo CBC proporciona confidencialidad sólida si se usa con un IV impredecible, y en aplicaciones modernas se combina con autenticación (o se sustituye por AES-GCM).</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Advertencia Técnica de Seguridad Cryptium */}
               <div className="cr-edu-note hex-bg">
                 <AlertTriangle size={22} style={{ flexShrink: 0, color: '#f59e0b' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>

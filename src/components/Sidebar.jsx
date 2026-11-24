@@ -17,9 +17,9 @@ const navItems = [
   { to: '/cifrado',             label: 'Cifrado',                 icon: Lock },
   { to: '/archivos',            label: 'Archivos',                icon: FileKey },
   { to: '/esteganografia-audio', label: 'Esteganografía de audio', icon: AudioWaveform },
-  { to: '/analisis',            label: 'Criptoanálisis',           icon: FlaskConical,    badge: 'Lab' },
-  { to: '/experimentos',        label: 'Experimentos',             icon: Sliders,        badge: 'Beta' },
-  { to: '/aprendizaje',         label: 'Aprendizaje',              icon: BookOpen,        badge: 'Nuevo' },
+  { to: '/analisis',            label: 'Criptoanálisis',           icon: FlaskConical},
+  { to: '/experimentos',        label: 'Experimentos',             icon: Sliders},
+  { to: '/aprendizaje',         label: 'Aprendizaje',              icon: BookOpen},
 ];
 
 export default function Sidebar() {

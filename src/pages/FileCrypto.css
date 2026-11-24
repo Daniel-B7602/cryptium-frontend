@@ -42,8 +42,8 @@
 
 .fc-algo-btn {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 6px;
   padding: 12px 16px;
   border-radius: var(--radius-md);
   background: var(--clr-bg);
@@ -51,6 +51,13 @@
   color: var(--txt-primary);
   cursor: pointer;
   transition: all var(--t-fast);
+}
+
+.fc-algo-btn-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .fc-algo-btn:hover {
@@ -69,6 +76,104 @@
   font-weight: 700;
   font-family: 'JetBrains Mono', monospace;
   color: var(--txt-primary);
+}
+
+/* Info Box */
+.fc-algo-info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--clr-surface-3);
+  border: 1px solid var(--clr-border);
+}
+
+.fc-algo-info-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--clr-accent);
+}
+
+.fc-algo-info-desc {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--txt-secondary);
+}
+
+.fc-algo-warn-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.fc-algo-warn-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.fc-algo-hybrid-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #c084fc;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.fc-algo-hybrid-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.fc-key-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.fc-btn-gen-key {
+  font-size: 0.75rem;
+  color: var(--clr-accent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fc-pem-textarea {
+  min-height: 110px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.fc-key-help {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--txt-muted);
+  margin-top: 6px;
+  line-height: 1.4;
 }
 
 .fc-algo-notice {

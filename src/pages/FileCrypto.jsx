@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
-import { Upload, Download, FileKey, X, Play, Info, AlertTriangle, Lock, Unlock } from 'lucide-react';
+import { Upload, Download, FileKey, X, Play, Info, AlertTriangle, Lock, Unlock, Sparkles, ShieldCheck } from 'lucide-react';
 import StatusAlert from '../components/StatusAlert';
+import RsaKeyManager from '../components/RsaKeyManager';
 import { encryptFile, decryptFile } from '../services/api';
 import './FileCrypto.css';
 
@@ -8,26 +9,34 @@ const FILE_ALGORITHMS = [
   {
     id: 'AES',
     name: 'AES-256',
+    type: 'Simétrico (Bloques)',
     status: 'available',
     statusText: 'Disponible',
-    description: 'Estándar de cifrado de bloques simétrico ideal para todo tipo de archivos.',
+    description: 'Estándar mundial de cifrado simétrico por bloques (128 bits / 16 bytes). Cifra y descifra cualquier tipo de archivo con la misma clave secreta mediante AES en modo CBC con IV aleatorio.',
     badgeClass: 'badge-accent',
+    keyHelp: 'Introduce una contraseña o clave secreta compartida. El emisor y el receptor deben usar la misma clave.',
   },
   {
     id: 'ChaCha20',
     name: 'ChaCha20',
-    status: 'coming_soon',
-    statusText: 'No disponible',
-    description: 'Algoritmo de flujo en desarrollo para procesamiento de archivos masivos.',
-    badgeClass: 'badge-muted',
+    type: 'Simétrico (Flujo)',
+    status: 'available',
+    statusText: 'Disponible',
+    description: 'Cifrador de flujo simétrico ultrarrápido (RFC 8439) con clave de 256 bits y nonce de 96 bits único por archivo. Es ideal para archivos de gran tamaño. No proporciona autenticación de integridad por sí solo (sin MAC Poly1305).',
+    badgeClass: 'badge-blue',
+    keyHelp: 'Introduce una contraseña o clave secreta. Se generará un nonce único de 12 bytes para este archivo.',
+    isUnauthenticated: true,
   },
   {
     id: 'RSA',
-    name: 'RSA',
-    status: 'coming_soon',
-    statusText: 'No disponible',
-    description: 'Algoritmo asimétrico no apto para archivos grandes sin cifrado híbrido.',
-    badgeClass: 'badge-muted',
+    name: 'RSA Híbrido',
+    type: 'Asimétrico (Sobre Digital)',
+    status: 'available',
+    statusText: 'Disponible',
+    description: 'Cifrado Híbrido: como RSA no puede cifrar directamente archivos grandes debido a su límite de bloque, una clave simétrica temporal de 256 bits cifra el archivo completo, y la Clave Pública RSA protege dicha clave simétrica dentro de un sobre digital.',
+    badgeClass: 'badge-purple',
+    keyHelp: 'Para CIFRAR el archivo necesitas la Clave Pública del destinatario. Para DESCIFRAR necesitas tu Clave Privada.',
+    isAsymmetric: true,
   },
 ];
 
@@ -88,7 +97,35 @@ export default function FileCrypto() {
 
   const validate = () => {
     if (!file) return 'Debes seleccionar un archivo para procesar.';
-    if (!key.trim()) return 'Debes introducir una clave.';
+    if (!key.trim()) return currentAlgo.isAsymmetric
+      ? `Debes proporcionar una ${operation === 'encrypt' ? 'Clave Pública' : 'Clave Privada'} RSA en formato PEM. Puedes pulsar «Generar par de claves RSA» para crear una.`
+      : 'Debes introducir una clave criptográfica.';
+    if (currentAlgo.isAsymmetric) {
+      const cleanKey = key.trim();
+      if (operation === 'encrypt') {
+        if (cleanKey.includes('BEGIN PRIVATE KEY') || cleanKey.includes('BEGIN RSA PRIVATE KEY')) {
+          return 'Has introducido una Clave Privada en el campo de cifrado. En RSA, los archivos se cifran con la Clave Pública del destinatario.';
+        }
+        if (!cleanKey.includes('-----BEGIN PUBLIC KEY-----')) {
+          return 'Formato de clave inválido: La Clave Pública RSA debe comenzar con "-----BEGIN PUBLIC KEY-----".';
+        }
+        if (!cleanKey.includes('-----END PUBLIC KEY-----')) {
+          return 'Clave incompleta: Falta la línea de cierre "-----END PUBLIC KEY-----".';
+        }
+      } else {
+        if (cleanKey.includes('BEGIN PUBLIC KEY') && !cleanKey.includes('PRIVATE KEY')) {
+          return 'Has introducido una Clave Pública en el campo de descifrado. Para descifrar necesitas tu Clave Privada correspondiente.';
+        }
+        const hasBeginPrivate = cleanKey.includes('-----BEGIN PRIVATE KEY-----') || cleanKey.includes('-----BEGIN RSA PRIVATE KEY-----');
+        const hasEndPrivate = cleanKey.includes('-----END PRIVATE KEY-----') || cleanKey.includes('-----END RSA PRIVATE KEY-----');
+        if (!hasBeginPrivate) {
+          return 'Formato de clave inválido: La Clave Privada RSA debe comenzar con "-----BEGIN PRIVATE KEY-----" o "-----BEGIN RSA PRIVATE KEY-----".';
+        }
+        if (!hasEndPrivate) {
+          return 'Clave incompleta: Falta la línea de cierre "-----END PRIVATE KEY-----".';
+        }
+      }
+    }
     return null;
   };
 
@@ -104,14 +141,6 @@ export default function FileCrypto() {
   };
 
   const handleExecute = async () => {
-    if (currentAlgo.status !== 'available') {
-      setStatus({
-        type: 'warning',
-        message: `El algoritmo ${currentAlgo.name} no está disponible para archivos en esta versión. Utiliza AES.`,
-      });
-      return;
-    }
-
     const err = validate();
     if (err) {
       setStatus({ type: 'error', message: err });
@@ -125,8 +154,8 @@ export default function FileCrypto() {
     try {
       const blob =
         operation === 'encrypt'
-          ? await encryptFile(file, key)
-          : await decryptFile(file, key);
+          ? await encryptFile(file, key, selectedAlgo)
+          : await decryptFile(file, key, selectedAlgo);
 
       const url = URL.createObjectURL(blob);
       const name = getOutputFilename();
@@ -139,11 +168,19 @@ export default function FileCrypto() {
       });
     } catch (err) {
       const isNetwork = err instanceof TypeError;
+      let msg = isNetwork
+        ? 'No se pudo conectar con el backend. Comprueba que el servidor esté en ejecución.'
+        : (err.message || 'Error al procesar el archivo.');
+
+      if (msg.includes('ASN1') || msg.includes('corrupted') || msg.includes('asn1')) {
+        msg = 'La clave proporcionada contiene datos corruptos o no compatibles con la estructura PEM/ASN.1 de RSA.';
+      } else if (msg.includes('No supported key formats') || msg.includes('unsupported format')) {
+        msg = 'El formato de la clave no es reconocido como una clave PEM RSA válida. Debe incluir cabeceras -----BEGIN... y -----END... estándar.';
+      }
+
       setStatus({
         type: 'error',
-        message: isNetwork
-          ? 'No se pudo conectar con el backend. Comprueba que el servidor está en ejecución.'
-          : err.message,
+        message: msg,
       });
     } finally {
       setLoading(false);
@@ -164,6 +201,21 @@ export default function FileCrypto() {
     setFile(null);
     setDownloadUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const generateRandomKey = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+';
+    const array = new Uint8Array(24);
+    window.crypto.getRandomValues(array);
+    let str = '';
+    for (let i = 0; i < array.length; i++) {
+      str += chars[array[i] % chars.length];
+    }
+    setKey(str);
+    setStatus({
+      type: 'info',
+      message: 'Se generó una clave aleatoria segura de 24 caracteres para el archivo.',
+    });
   };
 
   return (
@@ -205,23 +257,58 @@ export default function FileCrypto() {
               key={algo.id}
               type="button"
               className={`fc-algo-btn ${selectedAlgo === algo.id ? 'fc-algo-btn--active' : ''}`}
-              onClick={() => { setSelectedAlgo(algo.id); setStatus(null); }}
+              onClick={() => {
+                setSelectedAlgo(algo.id);
+                setStatus(null);
+                setKey('');
+              }}
             >
-              <span className="fc-algo-name">{algo.name}</span>
-              <span className={`badge badge-sm ${algo.badgeClass}`}>{algo.statusText}</span>
+              <div className="fc-algo-btn-top">
+                <span className="fc-algo-name">{algo.name}</span>
+                <span className={`badge badge-sm ${algo.badgeClass}`}>{algo.type}</span>
+              </div>
             </button>
           ))}
         </div>
 
-        {currentAlgo.status !== 'available' && (
-          <div className="fc-algo-notice">
-            <AlertTriangle size={15} />
-            <span>
-              Este algoritmo no está implementado para cifrado de archivos en esta versión. Selecciona <strong>AES-256</strong> para continuar.
-            </span>
+        {/* Tarjeta Informativa de Algoritmo para Archivos */}
+        <div className="fc-algo-info-box">
+          <div className="fc-algo-info-title">
+            <Info size={16} />
+            <span>¿Cómo funciona este algoritmo en archivos?</span>
           </div>
-        )}
+          <p className="fc-algo-info-desc">
+            {currentAlgo.description}
+          </p>
+
+          {currentAlgo.isUnauthenticated && (
+            <div className="fc-algo-warn-banner">
+              <AlertTriangle size={15} />
+              <span>
+                <strong>Aviso de Seguridad:</strong> ChaCha20 es un cifrador de flujo puro. Ofrece alta velocidad de procesamiento, pero <strong>no proporciona autenticación ni verificación de integridad por sí solo</strong> (sin MAC Poly1305).
+              </span>
+            </div>
+          )}
+
+          {currentAlgo.isAsymmetric && (
+            <div className="fc-algo-hybrid-banner">
+              <ShieldCheck size={15} />
+              <span>
+                <strong>Arquitectura Híbrida:</strong> Debido a que RSA tiene un límite matemático de ~190 bytes de entrada por operación, el archivo se cifra a máxima velocidad con una clave de sesión AES-256-CBC, y dicha clave simétrica se protege en un sobre digital con la Clave Pública RSA.
+              </span>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Gestor de Claves RSA si está seleccionado */}
+      {currentAlgo.isAsymmetric && (
+        <RsaKeyManager
+          onSelectKey={(selectedKeyPem) => setKey(selectedKeyPem)}
+          currentOperation={operation}
+          disabled={loading}
+        />
+      )}
 
       {/* Grid principal */}
       <div className="fc-layout">
@@ -272,21 +359,54 @@ export default function FileCrypto() {
             </div>
           )}
 
-          {/* Clave */}
+          {/* Clave según el algoritmo */}
           <div className="form-group fc-key-group">
-            <label className="form-label" htmlFor="fc-input-key">
-              🔑 Clave criptográfica ({selectedAlgo})
-            </label>
-            <input
-              id="fc-input-key"
-              type="text"
-              className="form-input"
-              value={key}
-              onChange={(e) => setKey(e.target.value)}
-              placeholder="Clave para el archivo..."
-              disabled={loading}
-              onKeyDown={(e) => e.key === 'Enter' && handleExecute()}
-            />
+            <div className="fc-key-header">
+              <label className="form-label" htmlFor="fc-input-key">
+                {currentAlgo.isAsymmetric
+                  ? (operation === 'encrypt' ? '📜 Clave Pública RSA (PEM)' : '🔐 Clave Privada RSA (PEM)')
+                  : `🔑 Clave criptográfica (${currentAlgo.name})`}
+              </label>
+              {!currentAlgo.isAsymmetric && operation === 'encrypt' && (
+                <button
+                  type="button"
+                  className="btn btn-xs btn-ghost fc-btn-gen-key"
+                  onClick={generateRandomKey}
+                  title="Generar clave aleatoria segura"
+                >
+                  <Sparkles size={12} /> Generar clave segura
+                </button>
+              )}
+            </div>
+
+            {currentAlgo.isAsymmetric ? (
+              <textarea
+                id="fc-input-key"
+                className="form-textarea fc-pem-textarea"
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+                placeholder={
+                  operation === 'encrypt'
+                    ? '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A...\n-----END PUBLIC KEY-----'
+                    : '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASC...\n-----END PRIVATE KEY-----'
+                }
+                disabled={loading}
+                rows={5}
+              />
+            ) : (
+              <input
+                id="fc-input-key"
+                type="text"
+                className="form-input"
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+                placeholder="Clave para el archivo..."
+                disabled={loading}
+                onKeyDown={(e) => e.key === 'Enter' && handleExecute()}
+              />
+            )}
+
+            <span className="fc-key-help">{currentAlgo.keyHelp}</span>
           </div>
         </div>
 
@@ -303,51 +423,52 @@ export default function FileCrypto() {
             >
               {loading ? (
                 <>
-                  <span className="spinner" /> Procesando...
+                  <span className="spinner" /> Procesando archivo...
                 </>
               ) : (
                 <>
                   <Play size={18} />
-                  Ejecutar {operation === 'encrypt' ? 'cifrado' : 'descifrado'}
+                  {operation === 'encrypt' ? 'Cifrar archivo' : 'Descifrar archivo'}
                 </>
               )}
             </button>
 
             {file && (
               <div className="fc-output-preview">
-                <span className="fc-op-label">Archivo de salida:</span>
-                <span className="fc-op-name mono">{getOutputFilename()}</span>
+                <span className="fc-op-label">Nombre resultante proyectado:</span>
+                <span className="fc-op-name">{getOutputFilename()}</span>
               </div>
             )}
           </div>
 
-          {/* Descarga */}
+          {/* Tarjeta de descarga tras procesar */}
           {downloadUrl && (
             <div className="card fc-download-card animate-fade-in">
-              <div className="tc-panel-title">
-                <Download size={14} /> Resultado listo
-              </div>
               <div className="fc-download-content">
-                <div className="fc-download-icon">✅</div>
+                <span className="fc-download-icon">
+                  {operation === 'encrypt' ? '🔒' : '✅'}
+                </span>
                 <div className="fc-download-info">
                   <span className="fc-dl-filename">{downloadName}</span>
-                  <span className="fc-dl-sub">Archivo procesado y listo para descargar</span>
+                  <span className="fc-dl-sub">
+                    Archivo {operation === 'encrypt' ? 'cifrado' : 'descifrado'} listo para guardar
+                  </span>
                 </div>
               </div>
+
               <button
                 id="fc-btn-download"
-                className="btn btn-primary fc-dl-btn"
+                className="btn btn-success fc-dl-btn"
                 onClick={handleDownload}
               >
-                <Download size={16} />
-                Descargar archivo
+                <Download size={16} /> Descargar archivo procesado
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Estado */}
+      {/* Alerta de estado */}
       {status && (
         <StatusAlert
           type={status.type}

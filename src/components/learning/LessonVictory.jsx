@@ -7,20 +7,27 @@ import {
   RotateCcw,
   Compass,
   Award,
+  BookOpen,
 } from 'lucide-react';
 import './LessonVictory.css';
 
 /**
- * Duolingo-inspired module completion screen.
- * Displays performance metrics, pedagogical takeaways, and next actions.
+ * Duolingo-inspired completion screen.
+ * Supports both individual exercise completion and full module completion.
  */
 export default function LessonVictory({
+  isModuleCompletion = false,
   moduleTitle,
   moduleNumber,
+  exerciseTitle,
+  exerciseNumber,
   nextModulePath,
   nextModuleName,
-  earnedXp = 100,
+  hasNextExercise = false,
+  earnedXp = 25,
   summaryPoints = [],
+  onNextExercise,
+  onReturnToTopic,
   onRestart,
 }) {
   const navigate = useNavigate();
@@ -35,17 +42,26 @@ export default function LessonVictory({
         </div>
       </div>
 
-      <h1 className="duo-victory-title">¡Módulo Completado!</h1>
-      <span className="duo-victory-module-name">{moduleTitle}</span>
+      <h1 className="duo-victory-title">
+        {isModuleCompletion ? '¡Módulo Completado!' : '¡Ejercicio Superado!'}
+      </h1>
+
+      <span className="duo-victory-module-name">
+        {isModuleCompletion
+          ? moduleTitle
+          : `${moduleTitle} · ${exerciseTitle || `Ejercicio ${exerciseNumber}`}`}
+      </span>
 
       {/* ── Real Performance Metrics ── */}
       <div className="duo-victory-stats">
         <div className="duo-victory-stat-card">
           <span className="duo-victory-stat-val retos">
             <CheckCircle2 size={22} />
-            4 / 4
+            {isModuleCompletion ? '16 / 16' : '4 / 4'}
           </span>
-          <span className="duo-victory-stat-label">Retos Superados</span>
+          <span className="duo-victory-stat-label">
+            {isModuleCompletion ? 'Retos del Módulo' : 'Retos Prácticos'}
+          </span>
         </div>
 
         <div className="duo-victory-stat-card">
@@ -85,7 +101,20 @@ export default function LessonVictory({
 
       {/* ── Action Buttons ── */}
       <div className="duo-victory-actions">
-        {nextModulePath && (
+        {/* Next exercise within the same topic */}
+        {!isModuleCompletion && hasNextExercise && onNextExercise && (
+          <button
+            type="button"
+            className="duo-btn-primary"
+            onClick={onNextExercise}
+          >
+            <span>Siguiente Ejercicio</span>
+            <ArrowRight size={18} />
+          </button>
+        )}
+
+        {/* Next module path if module completed */}
+        {isModuleCompletion && nextModulePath && (
           <button
             type="button"
             className="duo-btn-primary"
@@ -96,6 +125,19 @@ export default function LessonVictory({
           </button>
         )}
 
+        {/* Return to topic map / theory */}
+        {onReturnToTopic && (
+          <button
+            type="button"
+            className="duo-btn-secondary"
+            onClick={onReturnToTopic}
+          >
+            <BookOpen size={18} />
+            <span>Volver al Tema</span>
+          </button>
+        )}
+
+        {/* Restart / retry current exercise */}
         {onRestart && (
           <button
             type="button"
@@ -107,13 +149,14 @@ export default function LessonVictory({
           </button>
         )}
 
+        {/* Return to main roadmap */}
         <button
           type="button"
           className="duo-btn-ghost"
           onClick={() => navigate('/aprendizaje')}
         >
           <Compass size={18} />
-          <span>Volver a la Ruta</span>
+          <span>Ruta de Aprendizaje</span>
         </button>
       </div>
     </div>

@@ -26,32 +26,47 @@ async function handleResponse(res) {
 // ---------- Text Crypto ----------
 
 /**
- * Cifra un texto usando la clave proporcionada.
+ * Cifra un texto usando el algoritmo y la clave proporcionada.
  * @param {string} text
  * @param {string} key
- * @returns {Promise<{ encryptedText: string }>}
+ * @param {string} [algorithm='AES']  'AES' | 'ChaCha20' | 'RSA'
+ * @returns {Promise<{ encryptedText: string, algorithm: string, nonceOrIvHex?: string, details?: string }>}
  */
-export async function encryptText(text, key) {
+export async function encryptText(text, key, algorithm = 'AES') {
   const res = await fetch(`${BASE_URL}/api/Crypto/encrypt`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, key }),
+    body: JSON.stringify({ text, key, algorithm }),
   });
   await handleResponse(res);
   return res.json();
 }
 
 /**
- * Descifra un texto usando la clave proporcionada.
+ * Descifra un texto usando el algoritmo y la clave proporcionada.
  * @param {string} text
  * @param {string} key
- * @returns {Promise<{ decryptedText: string }>}
+ * @param {string} [algorithm='AES']  'AES' | 'ChaCha20' | 'RSA'
+ * @returns {Promise<{ decryptedText: string, algorithm: string, nonceOrIvHex?: string, details?: string }>}
  */
-export async function decryptText(text, key) {
+export async function decryptText(text, key, algorithm = 'AES') {
   const res = await fetch(`${BASE_URL}/api/Crypto/decrypt`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, key }),
+    body: JSON.stringify({ text, key, algorithm }),
+  });
+  await handleResponse(res);
+  return res.json();
+}
+
+/**
+ * Genera un par de claves asimétricas RSA (Pública y Privada en formato PEM).
+ * @param {number} [keySize=2048]
+ * @returns {Promise<{ publicKey: string, privateKey: string, keySize: number }>}
+ */
+export async function generateRsaKeys(keySize = 2048) {
+  const res = await fetch(`${BASE_URL}/api/Crypto/rsa/generate-keys?keySize=${keySize}`, {
+    method: 'GET',
   });
   await handleResponse(res);
   return res.json();
@@ -63,12 +78,14 @@ export async function decryptText(text, key) {
  * Cifra un archivo enviado como multipart/form-data.
  * @param {File} file
  * @param {string} key
+ * @param {string} [algorithm='AES']  'AES' | 'ChaCha20' | 'RSA'
  * @returns {Promise<Blob>}
  */
-export async function encryptFile(file, key) {
+export async function encryptFile(file, key, algorithm = 'AES') {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('key', key);
+  formData.append('algorithm', algorithm);
 
   const res = await fetch(`${BASE_URL}/api/FileCrypto/encrypt`, {
     method: 'POST',
@@ -82,12 +99,14 @@ export async function encryptFile(file, key) {
  * Descifra un archivo enviado como multipart/form-data.
  * @param {File} file
  * @param {string} key
+ * @param {string} [algorithm='AES']  'AES' | 'ChaCha20' | 'RSA'
  * @returns {Promise<Blob>}
  */
-export async function decryptFile(file, key) {
+export async function decryptFile(file, key, algorithm = 'AES') {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('key', key);
+  formData.append('algorithm', algorithm);
 
   const res = await fetch(`${BASE_URL}/api/FileCrypto/decrypt`, {
     method: 'POST',
@@ -108,7 +127,13 @@ export async function decryptFile(file, key) {
  *   entropy: number,
  *   totalBytes: number,
  *   uniqueBytes: number,
- *   frequency: Record<string, number>
+ *   frequency: Record<string, number>,
+ *   plaintext?: {
+ *     entropy: number,
+ *     totalBytes: number,
+ *     uniqueBytes: number,
+ *     frequency: Record<string, number>
+ *   }
  * }>}
  */
 export async function analyzeText(text, key) {
@@ -125,6 +150,8 @@ export async function analyzeText(text, key) {
  * Ejecuta la prueba experimental del efecto avalancha para AES.
  * @param {string} text  Texto en claro de prueba
  * @param {string} key   Clave experimental
+ * @param {number} [byteIndex=0] Índice del byte a alterar
+ * @param {number} [bitIndex=0]  Índice del bit a invertir (0 a 7)
  * @returns {Promise<{
  *   originalText: string,
  *   modifiedText: string,
@@ -143,11 +170,11 @@ export async function analyzeText(text, key) {
  *   ciphertextBytesCompared: number
  * }>}
  */
-export async function testAvalanche(text, key) {
+export async function testAvalanche(text, key, byteIndex = 0, bitIndex = 0) {
   const res = await fetch(`${BASE_URL}/api/Analysis/avalanche`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, key }),
+    body: JSON.stringify({ text, key, byteIndex, bitIndex }),
   });
   await handleResponse(res);
   return res.json();
@@ -220,5 +247,168 @@ export async function scanMalware(file) {
   await handleResponse(res);
   return res.json();
 }
+
+// ---------- Audio Steganography ----------
+
+/**
+ * Consulta la capacidad y metadatos de un archivo de audio WAV.
+ * @param {File} file Archivo WAV portador
+ * @returns {Promise<{
+ *   fileName: string,
+ *   fileSize: number,
+ *   durationSeconds: number,
+ *   sampleRate: number,
+ *   channels: number,
+ *   bitsPerSample: number,
+ *   totalSamples: number,
+ *   maxMessageBytes: number,
+ *   maxMessageChars: number,
+ *   audioFormat: string,
+ *   isValid: boolean,
+ *   errorMessage?: string
+ * }>}
+ */
+export async function getAudioCapacity(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch(`${BASE_URL}/api/AudioSteganography/capacity`, {
+    method: 'POST',
+    body: formData,
+  });
+  await handleResponse(res);
+  return res.json();
+}
+
+/**
+ * Cifra y oculta un mensaje de texto dentro de un archivo de audio WAV usando LSB + AES-256-GCM y PBKDF2.
+ * @param {File} file Archivo WAV portador
+ * @param {string} message Mensaje de texto a ocultar
+ * @param {string} key Contraseña criptográfica
+ * @returns {Promise<Blob>}
+ */
+export async function hideAudioMessage(file, message, key) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('message', message);
+  formData.append('key', key);
+
+  const res = await fetch(`${BASE_URL}/api/AudioSteganography/hide`, {
+    method: 'POST',
+    body: formData,
+  });
+  await handleResponse(res);
+  return res.blob();
+}
+
+/**
+ * Extrae y descifra un mensaje de texto oculto en un archivo de audio WAV.
+ * @param {File} file Archivo WAV con mensaje esteganográfico
+ * @param {string} key Contraseña criptográfica
+ * @returns {Promise<{
+ *   message: string,
+ *   messageBytes: number,
+ *   fileName: string,
+ *   algorithm: string,
+ *   sampleRate: number,
+ *   channels: number,
+ *   bitsPerSample: number,
+ *   integrityVerified: boolean
+ * }>}
+ */
+export async function extractAudioMessage(file, key) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('key', key);
+
+  const res = await fetch(`${BASE_URL}/api/AudioSteganography/extract`, {
+    method: 'POST',
+    body: formData,
+  });
+  await handleResponse(res);
+  return res.json();
+}
+
+/**
+ * Realiza un análisis forense técnico y esteganográfico detallado de un archivo WAV.
+ * @param {File} file Archivo WAV a analizar
+ * @returns {Promise<{
+ *   fileName: string,
+ *   fileSize: number,
+ *   durationSeconds: number,
+ *   sampleRate: number,
+ *   channels: number,
+ *   bitsPerSample: number,
+ *   totalSamples: number,
+ *   maxMessageBytes: number,
+ *   maxMessageChars: number,
+ *   audioFormat: string,
+ *   isValid: boolean,
+ *   blockAlign: number,
+ *   byteRate: number,
+ *   dynamicRangeDb: number,
+ *   hasCryptiumPayload: boolean,
+ *   payloadVersion?: number,
+ *   payloadSizeBytes?: number,
+ *   payloadCapacityPercentage?: number,
+ *   remainingSamples?: number,
+ *   stegoStatusDescription: string
+ * }>}
+ */
+export async function analyzeAudio(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch(`${BASE_URL}/api/AudioSteganography/analyze`, {
+    method: 'POST',
+    body: formData,
+  });
+  await handleResponse(res);
+  return res.json();
+}
+
+/**
+ * Compara muestra a muestra un audio original con un audio portador con esteganografía.
+ * @param {File} originalFile Archivo de audio original
+ * @param {File} stegoFile Archivo de audio con mensaje oculto
+ * @returns {Promise<{
+ *   originalFileName: string,
+ *   stegoFileName: string,
+ *   totalSamples: number,
+ *   channels: number,
+ *   sampleRate: number,
+ *   bitsPerSample: number,
+ *   durationSeconds: number,
+ *   modifiedSamplesCount: number,
+ *   modifiedSamplesPercentage: number,
+ *   maxAbsoluteDifference: number,
+ *   meanAbsoluteError: number,
+ *   meanSquaredError: number,
+ *   rootMeanSquaredError: number,
+ *   signalToNoiseRatioDb?: number,
+ *   peakSignalToNoiseRatioDb?: number,
+ *   isIdentical: boolean,
+ *   snrQualityAssessment: string,
+ *   waveformOriginal: number[],
+ *   waveformStego: number[],
+ *   waveformDifference: number[],
+ *   isCompatible: boolean,
+ *   errorMessage?: string
+ * }>}
+ */
+export async function compareAudio(originalFile, stegoFile) {
+  const formData = new FormData();
+  formData.append('originalFile', originalFile);
+  formData.append('stegoFile', stegoFile);
+
+  const res = await fetch(`${BASE_URL}/api/AudioSteganography/compare`, {
+    method: 'POST',
+    body: formData,
+  });
+  await handleResponse(res);
+  return res.json();
+}
+
+
 
 
